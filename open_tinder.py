@@ -30,6 +30,7 @@ class OpenTinder:
         
         self.handle_potential_popups() # Allow Location Pop Up
         self.handle_potential_popups() # Deny Notifications Pop Up
+        sleep(15)
     
     def facebook_login(self):
         # Find and click the Facebook login button
