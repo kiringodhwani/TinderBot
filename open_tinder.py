@@ -76,7 +76,6 @@ class OpenTinder:
         # Allow Location Popup
         try:
             xpath = '//*[@id="q-314954669"]/div/div/div/div/div[3]/button[1]/div[2]/div[2]'
-            #allow_location_button = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
             allow_location_button = self.driver.find_element('xpath', xpath)
             allow_location_button.click()
             print('Allowed Location')
@@ -88,7 +87,7 @@ class OpenTinder:
             xpath = '//*[@id="q-314954669"]/div/div/div/div/div[3]/button[2]/div[2]/div[2]'
             notifications_button = self.driver.find_element('xpath', xpath)
             notifications_button.click()
-            print('Allowed Notifications')
+            print('Denied Notifications')
         except:
             pass
 
