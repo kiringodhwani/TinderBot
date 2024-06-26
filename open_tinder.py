@@ -91,14 +91,5 @@ class OpenTinder:
             print('Allowed Notifications')
         except:
             pass
-        
-        # Enable Location Popup
-        try:
-            xpath = '//div[contains(text(), "Enable")]'
-            enable_button = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
-            enable_button.click()
-            print('Enabled Location')
-        except:
-            pass
 
         return None
