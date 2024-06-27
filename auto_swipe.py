@@ -24,9 +24,9 @@ class AutoSwipe:
         start = time.time()
         amount_liked = 0
         while amount_liked < number_to_like:
+            # --------------------------------------------------------------
             # Possible end conditions where we can no longer make likes:
             #  1. No more remaining daily likes
-            #  2. Ran out of potential matches in the area
             try:
                 xpath = '//div[contains(text(), "Go Global")]'
                 self.driver.find_element('xpath', xpath)
@@ -34,6 +34,20 @@ class AutoSwipe:
                 break
             except NoSuchElementException:
                 pass
+            #  2. Ran out of potential matches in the area
+            try:
+                xpath = '//*[@id="q-314954669"]/div/div/div[1]/div[3]/div[1]/div[2]/div/div[1]/span[1]/div/div'
+                self.driver.find_element('xpath', xpath)
+                self.auto_swipe_stats['like'] -= 1  # To get this pop up, the bot must have tried to like the last person. This
+                                                    # like does go through, but our # of likes for the session is still
+                                                    # incremented by 1. To ensure this like doesn't count, we decrement
+                                                    # the number of likes for the current session here.
+                print('No more likes remaining for today.')
+                break
+            except NoSuchElementException:
+                pass
+            # --------------------------------------------------------------
+                
             
             if random.random() <= ratio:
                 self.right_swipe()
