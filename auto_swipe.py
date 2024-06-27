@@ -47,7 +47,6 @@ class AutoSwipe:
             except NoSuchElementException:
                 pass
             # --------------------------------------------------------------
-                
             
             if random.random() <= ratio:
                 self.right_swipe()
