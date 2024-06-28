@@ -134,3 +134,14 @@ class AutoSwipe:
             self.handle_potential_popups()
         except:
             pass
+       
+        # Close "It's a Match!" pop up
+        try:
+            xpath = '//*[@id="u-1089589689"]/div/div/div[1]/div/div[4]/button'
+            close_ItsAMatch_button = self.driver.find_element('xpath', xpath)
+            close_ItsAMatch_button.click()
+            print('Closed "It\'s a Match! pop up')
+            time.sleep(3)
+            self.handle_potential_popups()
+        except:
+            pass
