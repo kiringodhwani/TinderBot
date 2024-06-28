@@ -2,6 +2,9 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
 
 import time
 import random
@@ -20,6 +23,7 @@ class AutoSwipe:
     def auto_swipe(self, number_to_like, ratio=0.7):
         time.sleep(5)
         self.handle_potential_popups() # Say 'Maybe Later' to See Who Liked You and close Tinder Web Exclusive pop Up
+        time.sleep(50)
 
         start = time.time()
         amount_liked = 0
@@ -48,6 +52,32 @@ class AutoSwipe:
                 pass
             # --------------------------------------------------------------
             
+            # Random clicking back and forth through the current profile's selection of photos. Mimics how 
+            # a user flips through a profile's photos before deciding to like or dislike. 
+            try:
+                time.sleep(2)
+                actions = ActionChains(self.driver)
+                actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0) # Test click
+                actions.move_by_offset(260, 70).click().perform()
+                for i in range(random.randint(6, 11)):
+                    if i == 0 or random.random() <= 0.75:
+                        # To flip to right image, click 0 pixels up and 200 pixels right from the middle of the page.
+                        print('Right Image')
+                        actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
+                        actions.move_by_offset(260, 70).click().perform()
+                    else:
+                        # To flip to left image, click 0 pixels up and 50 pixels left from the middle of the page.
+                        print('Left Image')
+                        actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
+                        actions.move_by_offset(80, 70).click().perform()
+
+                    sleep_btw_flips = random.uniform(4.0, 6.0)
+                    time.sleep(sleep_btw_flips)
+                    
+            except NoSuchElementException:
+                print('Couldn\'t locate information button')
+            
+            # Swipe right or left
             if random.random() <= ratio:
                 self.right_swipe()
                 amount_liked += 1
@@ -96,7 +126,7 @@ class AutoSwipe:
         
         # Close Tinder Web Exclusive Pop Up
         try:
-            xpath = '//*[@id="q1413426407"]/div/div[1]/div/main/div[1]/div/button'
+            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/button'
             close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
             close_tinder_web_exclusive_button.click()
             print('Closed Tinder Web Exclusive pop up')

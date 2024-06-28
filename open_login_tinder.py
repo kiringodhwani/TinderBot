@@ -26,11 +26,10 @@ class OpenLoginTinder:
         
         # Log in with Facebook
         self.facebook_login()
-        sleep(15)
+        sleep(200) #15
         
-        self.handle_potential_popups() # Allow Location Pop Up
-        self.handle_potential_popups() # Deny Notifications Pop Up
-        sleep(20)
+        self.handle_potential_popups() 
+        sleep(15)
         return self.driver
     
     def facebook_login(self):
@@ -70,24 +69,30 @@ class OpenLoginTinder:
             cookies_accept_button = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
             cookies_accept_button.click()
             print('Accepted Cookies')
+            time.sleep(3)
+            self.handle_potential_popups()
         except:
             pass
 
         # Allow Location Popup
         try:
-            xpath = '//*[@id="q-314954669"]/div/div/div/div/div[3]/button[1]/div[2]/div[2]'
+            xpath = '//div[contains(text(), "Allow")]'
             allow_location_button = self.driver.find_element('xpath', xpath)
             allow_location_button.click()
             print('Allowed Location')
+            time.sleep(3)
+            self.handle_potential_popups()
         except:
             pass
         
         # Deny Notifications Popup
         try:
-            xpath = '//*[@id="q-314954669"]/div/div/div/div/div[3]/button[2]/div[2]/div[2]'
+            xpath = '//*[@id="u1146625330"]/div/div/div/div/div[3]/button[2]'
             notifications_button = self.driver.find_element('xpath', xpath)
             notifications_button.click()
             print('Denied Notifications')
+            time.sleep(3)
+            self.handle_potential_popups()
         except:
             pass
 
