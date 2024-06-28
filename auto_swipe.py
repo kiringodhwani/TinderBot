@@ -60,18 +60,18 @@ class AutoSwipe:
                 actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0) # Test click
                 actions.move_by_offset(260, 70).click().perform()
                 for i in range(random.randint(6, 11)):
-                    if i == 0 or random.random() <= 0.75:
-                        # To flip to right image, click 0 pixels up and 200 pixels right from the middle of the page.
+                    if i < 4 or random.random() <= 0.7:
+                        # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
                         print('Right Image')
                         actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
                         actions.move_by_offset(260, 70).click().perform()
                     else:
-                        # To flip to left image, click 0 pixels up and 50 pixels left from the middle of the page.
+                        # To flip to left image, click 80 pixels right and 70 pixels up from the middle of the page.
                         print('Left Image')
                         actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
                         actions.move_by_offset(80, 70).click().perform()
 
-                    sleep_btw_flips = random.uniform(4.0, 6.0)
+                    sleep_btw_flips = random.uniform(2.0, 4.0)
                     time.sleep(sleep_btw_flips)
                     
             except NoSuchElementException:
@@ -89,7 +89,7 @@ class AutoSwipe:
             self.handle_potential_popups()
             
             # Randomize sleep between likes
-            cur_sleep_length = random.uniform(0.5, 2.3)
+            cur_sleep_length = random.uniform(3.0, 5.0)
             print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}")
             time.sleep(cur_sleep_length)
            
