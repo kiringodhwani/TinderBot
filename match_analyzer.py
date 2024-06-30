@@ -12,34 +12,42 @@ import random
 from config import email, password
 from match import Match
 
+content = '/html/body/div[1]'
+
 class MatchAnalyzer:
     def __init__(self, driver):
         self.driver = driver
         
     def get_all_new_matches(self):
+        self.handle_potential_popups()
+        time.sleep(5)
+        
+        iteration = 0
         matches = []
-        used_chatids = [] # allows us to determine if we accidentally repeat chat IDs while scrolling.
+        used_chatids = ['recs'] # allows us to determine if we accidentally repeat chat IDs while scrolling.
         
         # We keep scrolling through all new matches until we have processed all of them.
         while True:
-        
             print('Getting Chat IDs of all new matches...')
             new_chatids = self.get_chat_ids()
             copied = new_chatids.copy()
-            for index in range(len(copied)):
-                chatid = copied[index]
+            for chatid in copied:
                 if chatid in used_chatids:
                     new_chatids.remove(chatid)
                 else:
                     used_chatids.append(chatid)
-
+            
             # Break if no new matches are found
             if len(new_chatids) == 0:
-                print('No new matches were found :(')
+                print('No more new matches found :(')
                 break
+            
+            print('New Chat IDs: ', new_chatids)
 
             print('Getting information for each match using the Chat IDs...')
             for chatid in new_chatids:
+                iteration += 1
+                print(f'Processing Match #{iteration}...')
                 matches.append(self.get_match(chatid))
 
             print('Scrolling down to get more chatids...')
@@ -61,7 +69,7 @@ class MatchAnalyzer:
             xpath = '//button[@role="tab"]'
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
         except TimeoutException:
-            print("match tab could not be found, trying again")
+            print("Match tab could not be found, trying again")
             self.driver.get(self.HOME_URL)
             time.sleep(1)
             return self.get_chat_ids(new, messaged)
@@ -73,7 +81,7 @@ class MatchAnalyzer:
         for tab in tabs:
             if tab.text == 'Matches':
                 try:
-                    print('clicked into matches tab')
+                    print('Clicked into Matches tab')
                     tab.click()
                 except:
                     self.driver.get(self.HOME_URL)
@@ -86,16 +94,17 @@ class MatchAnalyzer:
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
             div = self.driver.find_element(By.XPATH, xpath)
-
-            list_refs = div.find_elements(By.XPATH, './/div/div/a')
-            print(len(list_refs))
+            
+#             //*[@id="u-2072757490"]/ul/li[3]/a
+#             //*[@id="u-2072757490"]/ul/li[2]/a
+            #list_refs = div.find_elements(By.XPATH, ".//descendant::a[contains(@id, 'u-2072757490')]")
+            list_refs = div.find_elements(By.XPATH, '//*[@id="u-2072757490"]/ul/li/a')
             for index in range(len(list_refs)):
                 try:
                     ref = list_refs[index].get_attribute('href')
                     if "likes-you" in ref or "my-likes" in ref:
                         continue
                     else:
-                        print(ref)
                         chatids.append(ref.split('/')[-1])
                 except:
                     continue
@@ -133,43 +142,43 @@ class MatchAnalyzer:
 
         href = f'/app/messages/{chatid}'
 
-        # Find the match with the passed in chatid. First check if the match has already been messaged. 
-        try:
-            xpath = '//*[@role="tab"]'
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
+#         # Find the match with the passed in chatid. First check if the match has already been messaged. 
+#         try:
+#             xpath = '//*[@role="tab"]'
+#             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
-            tabs = self.driver.find_elements(By.XPATH, xpath)
-            for tab in tabs:
-                if tab.text == "Messages":
-                    tab.click()
-            time.sleep(1)
+#             tabs = self.driver.find_elements(By.XPATH, xpath)
+#             for tab in tabs:
+#                 if tab.text == "Messages":
+#                     tab.click()
+#             time.sleep(1)
+#         except Exception as e:
+#             self.driver.get(self.HOME_URL)
+#             print(e)
+#             return self.open_chat(chatid)
+
+#         try:
+#             match_button = self.driver.find_element(By.XPATH, '//a[@href="{}"]'.format(href))
+#             self.driver.execute_script("arguments[0].click();", match_button)
+#             print('Found in message tab')
+
+#         except Exception as e:
+
+        # Check if match is new, not yet messaged. 
+        xpath = '//*[@role="tab"]'
+        WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
+
+        tabs = self.driver.find_elements(By.XPATH, xpath)
+        for tab in tabs:
+            if tab.text == "Matches":
+                tab.click()
+        time.sleep(1)
+
+        try:
+            matched_button = self.driver.find_element(By.XPATH, '//a[@href="{}"]'.format(href))
+            matched_button.click()
         except Exception as e:
-            self.driver.get(self.HOME_URL)
             print(e)
-            return self.open_chat(chatid)
-
-        try:
-            match_button = self.driver.find_element(By.XPATH, '//a[@href="{}"]'.format(href))
-            self.driver.execute_script("arguments[0].click();", match_button)
-
-        except Exception as e:
-            # Check if match is new, not yet messaged. 
-            xpath = '//*[@role="tab"]'
-            # wait for element to appear
-            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
-
-            tabs = self.driver.find_elements(By.XPATH, xpath)
-            for tab in tabs:
-                if tab.text == "Matches":
-                    tab.click()
-
-            time.sleep(1)
-
-            try:
-                matched_button = self.driver.find_element(By.XPATH, '//a[@href="{}"]'.format(href))
-                matched_button.click()
-            except Exception as e:
-                print(e)
         time.sleep(1)
         
     def is_chat_opened(self, chatid):
@@ -206,7 +215,7 @@ class MatchAnalyzer:
             self.open_chat(chatid)
 
         try:
-            xpath = f'{content}/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div[1]/div/div/div[2]/div[1]/div/div[1]/div[1]/h1'
+            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
             return element.text
@@ -220,7 +229,7 @@ class MatchAnalyzer:
         age = None
 
         try:
-            xpath = f'{content}/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div[1]/div/div/div[2]/div[1]/div/div[1]/span'
+            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/span'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.XPATH, xpath)))
@@ -238,7 +247,11 @@ class MatchAnalyzer:
             self.open_chat(chatid)
 
         passions = []
-        xpath = f'{content}/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div[1]/div/div/div[2]/div/div/div[2]/div[2]/div'
+#         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[1]'
+#         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[2]'
+#         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[3]'
+        xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[*]'
+        
         elements = self.driver.find_elements(By.XPATH, xpath)
         for el in elements:
             passions.append(el.text)
@@ -294,3 +307,26 @@ class MatchAnalyzer:
                 rowdata['distance'] = distance
 
         return rowdata
+    
+    def handle_potential_popups(self):
+        # Say 'Maybe Later' to See Who Likes You
+        try:
+            xpath = '//div[contains(text(), "Maybe Later")]'
+            close_see_who_liked_you_button = self.driver.find_element('xpath', xpath)
+            close_see_who_liked_you_button.click()
+            print('Said "Maybe Later" to See Who Liked You')
+            time.sleep(3)
+            self.handle_potential_popups()
+        except:
+            pass
+        
+        # Close Tinder Web Exclusive Pop Up
+        try:
+            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/button'
+            close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
+            close_tinder_web_exclusive_button.click()
+            print('Closed Tinder Web Exclusive pop up')
+            time.sleep(3)
+            self.handle_potential_popups()
+        except:
+            pass

@@ -4,7 +4,7 @@ from match_analyzer import MatchAnalyzer
 from time import sleep
 
 # Open and Log in to Tinder
-print('Start Opening and Logging into Twitter')
+print('Start Opening and Logging into Tinder')
 OpenLoginTinder = OpenLoginTinder()
 driver = OpenLoginTinder.open_login_tinder()
 print('Opened and Logged into Tinder')
