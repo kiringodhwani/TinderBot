@@ -8,10 +8,51 @@ from selenium.webdriver.support import expected_conditions as EC
 from config import email, password
 
 class OpenLoginTinder:
+    """
+    A class for opening a Chrome window, logging into Tinder.com using a Facebook account, and
+    handling any pop ups that appear during the login process.
+    
+    Attributes
+    ----------
+    driver : webdriver.Chrome class
+        Allows us to control a Chrome session with Python code.
+        
+    Methods
+    -------
+    open_login_tinder():
+        Opens tinder.com in Chrome, logs into Tinder using Facebook, and handles any pop ups
+        that appear during the login process.
+    
+    facebook_login():
+        Provided the login page on Tinder, clicks the Facebook login option, logs in by inputting
+        Facebook credentials, and handles any pop ups that appear.
+        
+    handle_potential_popups():
+        Defines the logic to handle pop ups that appear during the login process. This includes
+        selecting 'accept' on a pop up about accepting cookies, selecting 'allow' on a pop up
+        about allowing Tinder to use your location, and selecting 'deny' on a pop up about
+        allowing Tinder to send you notifications.
+    """
+    
     def __init__(self):
+        """Initializes a new instance of the OpenLoginTinder class.
+           
+           Parameters
+           ----------
+               driver : webdriver.Chrome class
+                   This method creates a new WebDriver instance using ChromeDriver. This driver
+                   can then be used to interact with a Chrome browser for web automation.
+        """
         self.driver = webdriver.Chrome()
        
     def open_login_tinder(self):
+        """Opens tinder.com in Chrome, logs into Tinder using Facebook, and handles any pop ups
+           that appear during the login process.
+        
+        Returns
+        -------
+        The WebDriver instance for Chrome that contains the logged into Tinder page. 
+        """
         sleep(2)
         
         # Open Tinder in a Chrome window
@@ -33,6 +74,9 @@ class OpenLoginTinder:
         return self.driver
     
     def facebook_login(self):
+        """Provided the login page on Tinder, clicks the Facebook login option, logs in by inputting
+           Facebook credentials, and handles any pop ups that appear.
+        """
         # Find and click the Facebook login button
         xpath = '//div[contains(text(), "Log in with Facebook")]'
         login_with_facebook = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
@@ -63,6 +107,11 @@ class OpenLoginTinder:
         self.driver.switch_to.window(base_window)
     
     def handle_potential_popups(self):
+        """Defines the logic to handle pop ups that appear during the login process. This includes
+        selecting 'accept' on a pop up about accepting cookies, selecting 'allow' on a pop up
+        about allowing Tinder to use your location, and selecting 'deny' on a pop up about
+        allowing Tinder to send you notifications.
+        """
         # Accept Cookies
         try:
             xpath = '//div[contains(text(), "I accept")]'

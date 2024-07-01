@@ -48,9 +48,11 @@ class MatchAnalyzer:
             for chatid in new_chatids:
                 iteration += 1
                 print(f'Processing Match #{iteration}...')
-                matches.append(self.get_match(chatid))
+                new_match = self.get_match(chatid)
+                print(new_match.get_dictionary())
+                matches.append(new_match)
 
-            print('Scrolling down to get more chatids...')
+            print('Scrolling down to get more Chat IDs...')
             xpath = '//div[@role="tabpanel"]'
             tab = self.driver.find_element(By.XPATH, xpath)
             self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight;', tab)
@@ -118,10 +120,11 @@ class MatchAnalyzer:
     def get_match(self, chatid):
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
-
+            
         name = self.get_name(chatid)
         age = self.get_age(chatid)
         bio = self.get_bio(chatid)
+        looking_for = self.get_looking_for(chatid)
 
         rowdata = self.get_row_data(chatid)
         work = rowdata.get('work')
@@ -133,8 +136,7 @@ class MatchAnalyzer:
         passions = self.get_passions(chatid)
 
         return Match(name=name, chatid=chatid, age=age, work=work, study=study, home=home, 
-                     gender=gender, distance=distance, bio=bio, passions=passions)
-
+                     gender=gender, distance=distance, bio=bio, looking_for=looking_for, passions=passions)
     
     def open_chat(self, chatid):
         if self.is_chat_opened(chatid):
@@ -246,13 +248,24 @@ class MatchAnalyzer:
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
 
-        passions = []
 #         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[1]'
 #         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[2]'
 #         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[3]'
-        xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[*]'
+#
+#         //*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[5]/div/div/div[1]
+#         //*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[3]/div/div/div[1]
+#         xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[*]'
         
-        elements = self.driver.find_elements(By.XPATH, xpath)
+        passions = []
+        
+        # Identify the section for 'Passions' in the match's profile, so that we don't accidentally grab
+        # information from the 'Lifestyle' or 'Basics' sections of the match's profile.
+        passions_xpath = '//h2[contains(text(), "Passions")]'
+        parent_xpath = "./.."
+        passions_section = self.driver.find_element(By.XPATH, passions_xpath).find_element(By.XPATH, parent_xpath)
+
+        # Following sibling selector - find the match's passions in the 'Passions' section.
+        elements = passions_section.find_elements(By.XPATH, ".//div/div/div[position() >= 1]")
         for el in elements:
             passions.append(el.text)
 
@@ -263,8 +276,29 @@ class MatchAnalyzer:
             self.open_chat(chatid)
 
         try:
-            xpath = f'{content}/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div[1]/div/div/div[2]/div[2]/div'
-            return self.driver.find_element(By.XPATH, xpath).text
+            #xpath = f'{content}/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div[1]/div/div/div[2]/div[2]/div'
+            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[2]/div'
+            #xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[2]'
+            bio = self.driver.find_element(By.XPATH, xpath).text
+            if 'Looking for\n' in bio:
+                return None
+            else:
+                return bio
+        except:
+            return None
+    
+    def get_looking_for(self, chatid):
+        if not self.is_chat_opened(chatid):
+            self.open_chat(chatid)
+        try:
+            # The 'Bio' and 'Looking For' values can switch places depending on if the match includes a bio.
+            xpath = '//*[@id="de_29_2"]/div/div[2] | //*[@id="de_29_3"]/div/div[2]'
+            possibilities = self.driver.find_elements(By.XPATH, xpath)
+            for possibility in possibilities:
+                print(possibility)
+                if 'Looking for\n' in possibility.text:
+                    return possibility.text
+            return None
         except:
             return None
     

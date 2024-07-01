@@ -20,6 +20,3 @@ print('Opened and Logged into Tinder')
 sleep(20)
 MatchAnalyzer = MatchAnalyzer(driver=driver)
 new_matches = MatchAnalyzer.get_all_new_matches()
-for new_match in new_matches:
-    print(new_match.get_dictionary())
-    print()

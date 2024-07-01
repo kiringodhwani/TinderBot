@@ -12,7 +12,62 @@ import random
 from config import email, password
 
 class AutoSwipe:
+    """
+    A class for auto swiping in an open, logged-into Tinder page in Chrome. The auto swiping
+    mimics human behavior by randomly flipping through each Tinder profile's collection of 
+    images with random pauses between flips (mimics how users flip through a profile's photos
+    before deciding to like or dislike), pausing for random amounts of time between swipes,
+    and by allowing users to determine how many profiles they would like to 'like' (i.e., swipe
+    righton ) and what percentage of profile's they would like to 'like' (e.g., 70% of profiles).
+    
+    Attributes
+    ----------
+    driver : webdriver.Chrome class
+        A Tinder page in Chrome that has already been logged into.
+    
+    auto_swipe_stats : dict
+        Tracks the duration of the current auto swiping session and the number of likes and
+        dislikes that have occurred.
+        
+    Methods
+    -------
+    auto_swipe(number_to_like, ratio=0.7):
+        Auto swipes through the profiles in an open, logged-into Tinder page in Chrome. Swipes
+        right on (i.e., 'likes') 'number_to_like' profiles and uses 'ratio' to determine how
+        frequently profiles are liked (e.g., 70% of the time). To mimic human behavior, randomly
+        clicks back and forth through each profile's selection of photos (mimics how a user 
+        flips through a profile's photos before deciding to like or dislike), pauses between swipes,
+        and stops swiping if the user runs out of likes or potential matches. Handles any pop ups
+        that appear during the auto swiping process.
+        
+    right_swipe():
+        Swipes right on ('likes') the current profile. 
+    
+    left_swipe(): 
+        Swipes left on ('dislikes') the current profile.
+    
+    print_auto_swipe_stats():
+        Prints the results from the auto swiping session that are stored in self.auto_swipe_stats.
+        These stats include the the duration of the session and the number of likes and dislikes
+        that occurred. 
+        
+    handle_potential_popups():
+        Defines the logic to handle pop ups that appear during the auto swiping process. This
+        includes declining a pop up that asks if you want to 'See Who Likes You', closing a pop up
+        advertising 'Tinder Web Exclusive', and closing the 'It's a Match!' pop up that appeares
+        when you swipe right on someone that also swiped right on you. 
+    """
+    
     def __init__(self, driver):
+        """Initializes a new instance of the AutoSwipe class. Stores the WebDriver instance and
+           a dictionary to track the stats of the auto swiping session.
+        
+        Parameters
+        ----------
+            driver : webdriver.Chrome class
+                Accepts a WebDriver instance for Chrome that contains a logged into Tinder page.
+                REQUIRES that the Tinder page has ALREADY BEEN LOGGED INTO.
+        """
         self.driver = driver
         self.auto_swipe_stats = {
             "session_duration": 0,
@@ -21,6 +76,21 @@ class AutoSwipe:
         }
     
     def auto_swipe(self, number_to_like, ratio=0.7):
+        """Auto swipes through the profiles in an open, logged-into Tinder page in Chrome. Swipes
+        right on (i.e., 'likes') 'number_to_like' profiles and uses 'ratio' to determine how
+        frequently profiles are liked (e.g., 70% of the time). To mimic human behavior, randomly
+        clicks back and forth through each profile's selection of photos (mimics how a user 
+        flips through a profile's photos before deciding to like or dislike), pauses between swipes,
+        and stops swiping if the user runs out of likes or potential matches. Handles any pop ups
+        that appear during the auto swiping process.
+        
+        Parameters
+        ----------
+            number_to_like : int
+                The total number of profiles to be swiped right on ('liked')
+            ratio : float
+                How often profiles should be swiped right on (e.g, 0.7 --> 70% of the time)
+        """
         time.sleep(5)
         self.handle_potential_popups() # Say 'Maybe Later' to See Who Liked You and close Tinder Web Exclusive pop Up
         time.sleep(50)
@@ -99,20 +169,33 @@ class AutoSwipe:
     
     # Right swipe is a like
     def right_swipe(self):
+        """Swipes right on ('likes') the current profile.
+        """
         doc = self.driver.find_element('xpath', '//*[@id="Tinder"]/body')
         doc.send_keys(Keys.ARROW_RIGHT)
         
     # Left swipe is a dislike
     def left_swipe(self):
+        """Swipes left on ('dislikes') the current profile.
+        """
         doc = self.driver.find_element('xpath', '//*[@id="Tinder"]/body')
         doc.send_keys(Keys.ARROW_LEFT)
     
     def print_auto_swipe_stats(self):
+        """Prints the results from the auto swiping session that are stored in self.auto_swipe_stats.
+        These stats include the the duration of the session and the number of likes and dislikes
+        that occurred. 
+        """
         print(f"This session lasted {self.auto_swipe_stats['session_duration']} seconds.")
         print(f"You've liked {self.auto_swipe_stats['like']} profiles during this session.")
         print(f"You've disliked {self.auto_swipe_stats['dislike']} profiles during this session.")
     
     def handle_potential_popups(self):
+        """Defines the logic to handle pop ups that appear during the auto swiping process. This
+        includes declining a pop up that asks if you want to 'See Who Likes You', closing a pop up
+        advertising 'Tinder Web Exclusive', and closing the 'It's a Match!' pop up that appeares
+        when you swipe right on someone that also swiped right on you.
+        """
         # Say 'Maybe Later' to See Who Likes You
         try:
             xpath = '//div[contains(text(), "Maybe Later")]'
