@@ -15,10 +15,89 @@ from match import Match
 content = '/html/body/div[1]'
 
 class MatchAnalyzer:
+    """
+    A class for scraping important information from your Tinder matches (i.e., Chat ID, name, 
+    age, work, place of study, location of home, gender, Tinder bio, relationship preference,
+    distance from you, and passions) and then using the scraped information to generate and
+    send messages to the matches. 
+    
+    Attributes
+    ----------
+    driver : webdriver.Chrome
+        A WebDriver instance for Chrome that contains a logged into Tinder page.
+        
+    Methods
+    -------
+    get_all_new_matches():
+        Gets the Chat IDs of all the user's new, unmessaged Tinder matches and then scrapes 
+        various pieces of information from these profiles (see the Match class). 
+    
+    get_chat_ids():
+        Clicks into the 'Matches' tab on Tinder to see new matches and then scrapes the Chat ID
+        associated with each match. These Chat IDs act as unique identifiers for each match on
+        Tinder.
+    
+    get_match(chatid):
+        Extracts all of the important information for a match (e.g., name, age, bio,
+        passions, etc.) using its Chat ID.
+    
+    open_chat(chatid):
+        Opens the 'Chat Page' for the match with the passed in Chat ID. The 'Chat Page' consists
+        of a message box to communicate with the match as well as the match's profile. From the
+        'Chat Page', we can scrape all necessary information from the match's profile. 
+    
+    is_chat_opened(chatid):
+        Verifies if the 'Chat Page' for the match with the passed in Chat ID is currently opened in
+        the Chrome driver.
+    
+    get_name(chatid):
+        Provided the Chat ID of a specific match, scrapes the match's name from the match's 'Chat Page'.
+    
+    get_age(chatid):
+        Provided the Chat ID of a specific match, scrapes the match's age from the match's 'Chat Page'.
+    
+    get_passions(chatid):
+        Provided the Chat ID of a specific match, scrapes the match's passions from the match's 'Chat Page'.
+    
+    get_bio(chatid):
+        Provided the Chat ID of a specific match, scrapes the match's Tinder bio from the match's 'Chat Page'.
+    
+    get_looking_for(chatid):
+        Provided the Chat ID of a specific match, scrapes the match's relationship preference from the
+        match's 'Chat Page'.
+    
+    get_row_data(chatid):
+        Provided the Chat ID of a specific match, scrapes the match's work, place of study, location of
+        home, gender, and distance from you from the match's 'Chat Page'.
+        
+    handle_potential_popups():
+        Defines the logic to handle pop ups that appear while scraping information from your matches. This
+        includes declining a pop up that asks if you want to 'See Who Likes You' and closing a pop up
+        advertising 'Tinder Web Exclusive'.
+    """
+    
     def __init__(self, driver):
+        """Initializes a new instance of the MatchScraper class.
+        
+        Parameters
+        ----------
+            driver : webdriver.Chrome
+                Accepts a WebDriver instance for Chrome that contains a logged into Tinder page.
+                REQUIRES that the Tinder page has ALREADY BEEN LOGGED INTO.
+        """
         self.driver = driver
         
     def get_all_new_matches(self):
+        """Gets the Chat IDs of all the user's new, unmessaged Tinder matches and then scrapes 
+           various pieces of information from these profiles (see the Match class).
+        
+        Returns
+        -------
+            matches : list
+                A list of Match objects. Each Match object represents one scraped Tinder match and
+                contains the match's Chat ID, name, age, work, place of study, location of home, gender,
+                Tinder bio, relationship preference, distance from you, and passions. 
+        """
         self.handle_potential_popups()
         time.sleep(5)
         
@@ -59,11 +138,16 @@ class MatchAnalyzer:
             time.sleep(4)
 
         return matches
-         
-        
     
-    # Method to get Chat IDs for each match. 
     def get_chat_ids(self):
+        """Clicks into the 'Matches' tab on Tinder to see new matches and then scrapes the Chat ID
+        associated with each match. These Chat IDs act as unique identifiers for each match on Tinder.
+        
+        Returns
+        -------
+            chatids : list
+                A list containing the Chat IDs of the new matches.
+        """
         chatids = []
 
         # Wait until tabs in left sidebar have loaded so that we can click into the new matches.
@@ -116,8 +200,22 @@ class MatchAnalyzer:
 
         return chatids
     
-    # Method to extract all important information for a match using its Chat ID.
     def get_match(self, chatid):
+        """Extracts all of the important information for a match (e.g., name, age, bio,
+        passions, etc.) using its Chat ID.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose information we would like to scrape. 
+        
+        Returns
+        -------
+            Match
+                A Match object for the match with the passed in Chat ID. This object contains the
+                match's Chat ID, name, age, work, place of study, location of home, gender, Tinder
+                bio, relationship preference, distance from you, and passions. 
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
             
@@ -139,6 +237,15 @@ class MatchAnalyzer:
                      gender=gender, distance=distance, bio=bio, looking_for=looking_for, passions=passions)
     
     def open_chat(self, chatid):
+        """Opens the 'Chat Page' for the match with the passed in Chat ID. The 'Chat Page' consists
+        of a message box to communicate with the match as well as the match's profile. From the
+        'Chat Page', we can scrape all necessary information from the match's profile. 
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose 'Chat Page' we would like to open. 
+        """
         if self.is_chat_opened(chatid):
             return
 
@@ -184,35 +291,38 @@ class MatchAnalyzer:
         time.sleep(1)
         
     def is_chat_opened(self, chatid):
+        """Verifies if the 'Chat Page' for the match with the passed in Chat ID is currently opened in
+        the Chrome driver.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose 'Chat Page' we want verify is opened.
+        
+        Returns
+        -------
+            bool
+                True if the 'Chat Page' for the match with the passed in Chat ID is currently opened
+                and False otherwise.
+        """
         if chatid in self.driver.current_url:
             return True
         else:
             return False
-        
-    # Method to scroll through matches.
-    def scroll_down(self, xpath):
-        eula = self.driver.find_element(By.XPATH, xpath)
-        self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', eula)
-
-        SCROLL_PAUSE_TIME = 0.5
-
-        # Get scroll height
-        last_height = self.driver.execute_script("arguments[0].scrollHeight", eula)
-
-        while True:
-            # Scroll down to bottom
-            self.driver.execute_script("arguments[0].scrollTo(0, arguments[0].scrollHeight);", eula)
-
-            # Wait to load page
-            time.sleep(SCROLL_PAUSE_TIME)
-
-            # Calculate new scroll height and compare with last scroll height
-            new_height = self.driver.execute_script("arguments[0].scrollHeight", eula)
-            if new_height == last_height:
-                return True
-            last_height = new_height
     
     def get_name(self, chatid):
+        """Provided the Chat ID of a specific match, scrapes the match's name from the match's 'Chat Page'.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose name we would like to scrape. 
+        
+        Returns
+        -------
+            name : str
+                The name of the match with the passed in Chat ID.
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
 
@@ -220,11 +330,24 @@ class MatchAnalyzer:
             xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
-            return element.text
+            name = element.text
+            return name
         except Exception as e:
             print(e)
 
     def get_age(self, chatid):
+        """Provided the Chat ID of a specific match, scrapes the match's age from the match's 'Chat Page'.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose age we would like to scrape. 
+        
+        Returns
+        -------
+            age : int
+                The age of the match with the passed in Chat ID.
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
 
@@ -245,6 +368,18 @@ class MatchAnalyzer:
         return age
     
     def get_passions(self, chatid):
+        """Provided the Chat ID of a specific match, scrapes the match's passions from the match's 'Chat Page'.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose passions we would like to scrape. 
+        
+        Returns
+        -------
+            passions : list
+                The list of passions for the match with the passed in Chat ID.
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
 
@@ -272,6 +407,18 @@ class MatchAnalyzer:
         return passions
 
     def get_bio(self, chatid):
+        """Provided the Chat ID of a specific match, scrapes the match's Tinder bio from the match's 'Chat Page'.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose Tinder bio we would like to scrape. 
+        
+        Returns
+        -------
+            bio : str
+                The Tinder bio of the match with the passed in Chat ID.
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
 
@@ -288,6 +435,19 @@ class MatchAnalyzer:
             return None
     
     def get_looking_for(self, chatid):
+        """Provided the Chat ID of a specific match, scrapes the match's relationship preference from the
+        match's 'Chat Page'.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose relationship preference we would like to scrape.
+        
+        Returns
+        -------
+            str
+                The relationship preference of the match with the passed in Chat ID.
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
         try:
@@ -309,6 +469,20 @@ class MatchAnalyzer:
     _LOCATION_SVG_PATH_2 = "M11.445 12.5a2.945 2.945 0 0 1-2.721-1.855 3.04 3.04 0 0 1 .641-3.269 2.905 2.905 0 0 1 3.213-.645 3.003 3.003 0 0 1 1.813 2.776c-.006 1.653-1.322 2.991-2.946 2.993zm0-5.544c-1.378 0-2.496 1.139-2.498 2.542 0 1.404 1.115 2.544 2.495 2.546a2.52 2.52 0 0 0 2.502-2.535 2.527 2.527 0 0 0-2.499-2.545v-.008z"
     _GENDER_SVG_PATH = "M15.507 13.032c1.14-.952 1.862-2.656 1.862-5.592C17.37 4.436 14.9 2 11.855 2 8.81 2 6.34 4.436 6.34 7.44c0 3.07.786 4.8 2.02 5.726-2.586 1.768-5.054 4.62-4.18 6.204 1.88 3.406 14.28 3.606 15.726 0 .686-1.71-1.828-4.608-4.4-6.338"
     def get_row_data(self, chatid):
+        """Provided the Chat ID of a specific match, scrapes the match's work, place of study,
+        location of home, gender, and distance from you from the match's 'Chat Page'.
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match whose information we would like to scrape.
+        
+        Returns
+        -------
+            rowdata : dict
+                A dictionary containing the work, place of study, location of home, gender, and
+                distance from you for the match with the passed in Chat ID.
+        """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
 
@@ -343,6 +517,10 @@ class MatchAnalyzer:
         return rowdata
     
     def handle_potential_popups(self):
+        """Defines the logic to handle pop ups that appear while scraping information from your matches. This
+        includes declining a pop up that asks if you want to 'See Who Likes You' and closing a pop up
+        advertising 'Tinder Web Exclusive'.
+        """
         # Say 'Maybe Later' to See Who Likes You
         try:
             xpath = '//div[contains(text(), "Maybe Later")]'

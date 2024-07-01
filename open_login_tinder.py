@@ -14,7 +14,7 @@ class OpenLoginTinder:
     
     Attributes
     ----------
-    driver : webdriver.Chrome class
+    driver : webdriver.Chrome
         Allows us to control a Chrome session with Python code.
         
     Methods
@@ -37,11 +37,11 @@ class OpenLoginTinder:
     def __init__(self):
         """Initializes a new instance of the OpenLoginTinder class.
            
-           Parameters
-           ----------
-               driver : webdriver.Chrome class
-                   This method creates a new WebDriver instance using ChromeDriver. This driver
-                   can then be used to interact with a Chrome browser for web automation.
+        Parameters
+        ----------
+            driver : webdriver.Chrome class
+                This method creates a new WebDriver instance using ChromeDriver. This driver
+                can then be used to interact with a Chrome browser for web automation.
         """
         self.driver = webdriver.Chrome()
        
@@ -51,7 +51,8 @@ class OpenLoginTinder:
         
         Returns
         -------
-        The WebDriver instance for Chrome that contains the logged into Tinder page. 
+            self.driver : webdriver.Chrome
+                The WebDriver instance for Chrome that contains the logged into Tinder page. 
         """
         sleep(2)
         

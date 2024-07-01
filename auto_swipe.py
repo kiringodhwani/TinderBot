@@ -22,8 +22,8 @@ class AutoSwipe:
     
     Attributes
     ----------
-    driver : webdriver.Chrome class
-        A Tinder page in Chrome that has already been logged into.
+    driver : webdriver.Chrome
+        A WebDriver instance for Chrome that contains a logged into Tinder page.
     
     auto_swipe_stats : dict
         Tracks the duration of the current auto swiping session and the number of likes and
@@ -64,7 +64,7 @@ class AutoSwipe:
         
         Parameters
         ----------
-            driver : webdriver.Chrome class
+            driver : webdriver.Chrome
                 Accepts a WebDriver instance for Chrome that contains a logged into Tinder page.
                 REQUIRES that the Tinder page has ALREADY BEEN LOGGED INTO.
         """

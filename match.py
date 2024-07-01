@@ -15,6 +15,8 @@ class Match:
                 The type of work that the match does (e.g., 'Student')
             study : str
                 The school that the match studies at (e.g., 'Boston University')
+            home : str
+                Location of home (e.g., 'Newton')
             gender : str
                 The gender of the match (e.g., 'Woman')
             bio : str
@@ -81,6 +83,11 @@ class Match:
 
     def get_dictionary(self):
         """Returns the Tinder match and all of its attributes in dictionary form.
+        
+        Returns
+        -------
+            data : dict
+                A dictionary containing the Tinder match and all of its attributes.
         """
         data = {
             "chatid": self.get_chat_id(),
