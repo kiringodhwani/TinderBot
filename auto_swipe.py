@@ -104,7 +104,7 @@ class AutoSwipe:
             try:
                 xpath = '//div[contains(text(), "Go Global")]'
                 self.driver.find_element('xpath', xpath)
-                print('Ran out of potential matches in the area.')
+                print('Ran out of potential matches in the area.\n')
                 break
             except NoSuchElementException:
                 pass
@@ -116,7 +116,7 @@ class AutoSwipe:
                                                     # like does go through, but our # of likes for the session is still
                                                     # incremented by 1. To ensure this like doesn't count, we decrement
                                                     # the number of likes for the current session here.
-                print('No more likes remaining for today.')
+                print('No more likes remaining for today.\n')
                 break
             except NoSuchElementException:
                 pass
@@ -145,14 +145,16 @@ class AutoSwipe:
                     time.sleep(sleep_btw_flips)
                     
             except NoSuchElementException:
-                print('Couldn\'t locate information button')
+                print('Couldn\'t click at page center\n')
             
             # Swipe right or left
             if random.random() <= ratio:
+                print("Right swipe ('like') current photo")
                 self.right_swipe()
                 amount_liked += 1
                 self.auto_swipe_stats['like'] += 1
             else:
+                print("Left swipe ('dislike') current photo")
                 self.left_swipe()
                 self.auto_swipe_stats['dislike'] += 1
 
@@ -160,7 +162,7 @@ class AutoSwipe:
             
             # Randomize sleep between likes
             cur_sleep_length = random.uniform(3.0, 5.0)
-            print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}")
+            print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}\n")
             time.sleep(cur_sleep_length)
            
         duration = int(time.time() - start)

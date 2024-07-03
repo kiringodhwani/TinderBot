@@ -10,10 +10,10 @@ driver = OpenLoginTinder.open_login_tinder()
 print('Opened and logged into Tinder!\n')
 
 # # Auto Swipe
-# print('Start Autoswiping')
+# print('Start auto-swiping...')
 # AutoSwipe = AutoSwipe(driver=driver)
 # AutoSwipe.auto_swipe(number_to_like=50, ratio=0.7)
-# print('Done Autoswiping')
+# print('Done auto-swiping!\n')
 # sleep(10)
 
 # Analyze Matches
