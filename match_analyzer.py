@@ -28,9 +28,13 @@ class MatchAnalyzer:
         
     Methods
     -------
-    get_all_new_matches():
+    get_and_message_all_new_matches():
         Gets the Chat IDs of all the user's new, unmessaged Tinder matches and then scrapes 
-        various pieces of information from these profiles (see the Match class). 
+        various pieces of information from these profiles (see the Match class). Then, sends
+        a message to each new match based on the scraped information.
+    
+    send_intro_message(chatid, message):
+        Sends an introductory message to a specific match. 
     
     get_chat_ids():
         Clicks into the 'Matches' tab on Tinder to see new matches and then scrapes the Chat ID
@@ -89,7 +93,8 @@ class MatchAnalyzer:
         
     def get_all_new_matches(self):
         """Gets the Chat IDs of all the user's new, unmessaged Tinder matches and then scrapes 
-           various pieces of information from these profiles (see the Match class).
+        various pieces of information from these profiles (see the Match class). Then, sends
+        a message to each new match based on the scraped information.
         
         Returns
         -------
@@ -107,7 +112,7 @@ class MatchAnalyzer:
         
         # We keep scrolling through all new matches until we have processed all of them.
         while True:
-            print('Getting Chat IDs of all new matches...')
+            print('\nGetting Chat IDs of all new matches...')
             new_chatids = self.get_chat_ids()
             copied = new_chatids.copy()
             for chatid in copied:
@@ -123,12 +128,15 @@ class MatchAnalyzer:
             
             print('New Chat IDs: ', new_chatids)
 
-            print('Getting information for each match using the Chat IDs...')
+            print('Getting information for each match using the Chat IDs...\n')
             for chatid in new_chatids:
                 iteration += 1
-                print(f'Processing Match #{iteration}...')
+                print(f'Scraping information from match #{iteration}...')
                 new_match = self.get_match(chatid)
                 print(new_match.get_dictionary())
+                
+                print('Sending message to match...')
+                self.send_intro_message(new_match.get_chat_id(), "Hey")
                 matches.append(new_match)
 
             print('Scrolling down to get more Chat IDs...')
@@ -138,6 +146,40 @@ class MatchAnalyzer:
             time.sleep(4)
 
         return matches
+    
+    def send_intro_message(self, chatid, message):
+        """Sends an introductory message to a specific match. 
+        
+        Parameters
+        ----------
+            chatid : str
+                The Chat ID of the match that we want to send an intro message to.
+            message : str
+                The message to be sent to the match.
+        """
+        if not self.is_chat_opened(chatid):
+            self.open_chat(chatid)
+
+        # locate the textbox and send message
+        try:
+            print(f'Attempting to send "{message}"...')
+            xpath = '//textarea'
+
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH,xpath)))
+
+            textbox = self.driver.find_element(By.XPATH, xpath)
+            textbox.send_keys(message)
+            #textbox.send_keys(Keys.ENTER) # this line sends the message which we don't actually want to do
+
+            print("Message sent succesfully.\n".format(message))
+
+            # sleep so message can be sent
+            time.sleep(1.5)
+        except Exception as e:
+            print("SOMETHING WENT WRONG LOCATING TEXTBOX")
+            print(e)
+        
     
     def get_chat_ids(self):
         """Clicks into the 'Matches' tab on Tinder to see new matches and then scrapes the Chat ID
@@ -455,7 +497,6 @@ class MatchAnalyzer:
             xpath = '//*[@id="de_29_2"]/div/div[2] | //*[@id="de_29_3"]/div/div[2]'
             possibilities = self.driver.find_elements(By.XPATH, xpath)
             for possibility in possibilities:
-                print(possibility)
                 if 'Looking for\n' in possibility.text:
                     return possibility.text
             return None

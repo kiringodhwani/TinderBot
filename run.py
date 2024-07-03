@@ -4,10 +4,10 @@ from match_analyzer import MatchAnalyzer
 from time import sleep
 
 # Open and Log in to Tinder
-print('Start Opening and Logging into Tinder')
+print('\nStart opening and logging into Tinder...')
 OpenLoginTinder = OpenLoginTinder()
 driver = OpenLoginTinder.open_login_tinder()
-print('Opened and Logged into Tinder')
+print('Opened and logged into Tinder!\n')
 
 # # Auto Swipe
 # print('Start Autoswiping')
@@ -18,5 +18,7 @@ print('Opened and Logged into Tinder')
 
 # Analyze Matches
 sleep(20)
+print('Start analyzing and messaging matches...')
 MatchAnalyzer = MatchAnalyzer(driver=driver)
 new_matches = MatchAnalyzer.get_all_new_matches()
+print('Finished analyzing and messaging matches!\n')

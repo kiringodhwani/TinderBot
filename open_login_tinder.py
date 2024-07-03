@@ -68,7 +68,7 @@ class OpenLoginTinder:
         
         # Log in with Facebook
         self.facebook_login()
-        sleep(200) #15
+        sleep(150) #15
         
         self.handle_potential_popups() 
         sleep(15)
