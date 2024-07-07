@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 import time
 import random
 import requests
+import pprint
 
 from config import email, password, api_key
 from match import Match
@@ -138,7 +139,7 @@ class MatchAnalyzer:
                 iteration += 1
                 print(f'Scraping information from match #{iteration}...')
                 new_match = self.get_match(chatid)
-                print(new_match.get_dictionary())
+                pprint.pprint(new_match.get_dictionary())
                 
                 print('Sending introductory message to match...')
                 self.send_intro_message(new_match)
@@ -170,7 +171,7 @@ class MatchAnalyzer:
         try:
             message = self.create_message(match)
             
-            print(f'Attempting to send "{message}"...')
+            print(f'Attempting to send:\n"{message}"')
             xpath = '//textarea'
             time.sleep(5)
 
