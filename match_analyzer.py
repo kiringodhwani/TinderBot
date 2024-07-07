@@ -284,9 +284,6 @@ Format: A concise 1-2 sentence text message with no exclamation points. Do not i
 
             div = self.driver.find_element(By.XPATH, xpath)
             
-#             //*[@id="u-2072757490"]/ul/li[3]/a
-#             //*[@id="u-2072757490"]/ul/li[2]/a
-            #list_refs = div.find_elements(By.XPATH, ".//descendant::a[contains(@id, 'u-2072757490')]")
             list_refs = div.find_elements(By.XPATH, '//*[@id="u-2072757490"]/ul/li/a')
             for index in range(len(list_refs)):
                 try:
@@ -485,14 +482,6 @@ Format: A concise 1-2 sentence text message with no exclamation points. Do not i
         """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
-
-#         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[1]'
-#         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[2]'
-#         '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[3]'
-#
-#         //*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[5]/div/div/div[1]
-#         //*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[3]/div/div/div[1]
-#         xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[4]/div/div/div[*]'
         
         passions = []
         
@@ -526,9 +515,7 @@ Format: A concise 1-2 sentence text message with no exclamation points. Do not i
             self.open_chat(chatid)
 
         try:
-            #xpath = f'{content}/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div[1]/div/div/div[2]/div[2]/div'
             xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[2]/div'
-            #xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[2]'
             bio = self.driver.find_element(By.XPATH, xpath).text
             if 'Looking for\n' in bio:
                 return None
