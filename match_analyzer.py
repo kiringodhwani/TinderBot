@@ -8,8 +8,9 @@ from selenium.webdriver.common.by import By
 
 import time
 import random
+import requests
 
-from config import email, password
+from config import email, password, api_key
 from match import Match
 
 content = '/html/body/div[1]'
@@ -33,8 +34,12 @@ class MatchAnalyzer:
         various pieces of information from these profiles (see the Match class). Then, sends
         a message to each new match based on the scraped information.
     
-    send_intro_message(chatid, message):
+    send_intro_message(chatid):
         Sends an introductory message to a specific match. 
+    
+    create_message(match):
+        Creates an introductory message for a specific Tinder match that is new and has
+        not been messaged yet.
     
     get_chat_ids():
         Clicks into the 'Matches' tab on Tinder to see new matches and then scrapes the Chat ID
@@ -135,8 +140,8 @@ class MatchAnalyzer:
                 new_match = self.get_match(chatid)
                 print(new_match.get_dictionary())
                 
-                print('Sending message to match...')
-                self.send_intro_message(new_match.get_chat_id(), "Hey")
+                print('Sending introductory message to match...')
+                self.send_intro_message(new_match)
                 matches.append(new_match)
 
             print('Scrolling down to get more Chat IDs...')
@@ -147,23 +152,27 @@ class MatchAnalyzer:
 
         return matches
     
-    def send_intro_message(self, chatid, message):
+    def send_intro_message(self, match):
         """Sends an introductory message to a specific match. 
         
         Parameters
         ----------
-            chatid : str
-                The Chat ID of the match that we want to send an intro message to.
-            message : str
-                The message to be sent to the match.
+            match : Match
+                A Match object for the new, unmessaged Tinder match that we are interested in
+                sending an introductory message to. This object contains the match's Chat ID,
+                name, age, work, place of study, location of home, gender, Tinder bio,
+                relationship preference, distance from you, and passions. 
         """
-        if not self.is_chat_opened(chatid):
-            self.open_chat(chatid)
+        if not self.is_chat_opened(match.get_chat_id()):
+            self.open_chat(match.get_chat_id())
 
         # locate the textbox and send message
         try:
+            message = self.create_message(match)
+            
             print(f'Attempting to send "{message}"...')
             xpath = '//textarea'
+            time.sleep(5)
 
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.XPATH,xpath)))
@@ -179,8 +188,60 @@ class MatchAnalyzer:
         except Exception as e:
             print("SOMETHING WENT WRONG LOCATING TEXTBOX")
             print(e)
-        
     
+    def create_message(self, match):
+        """Creates an introductory message for a specific Tinder match that is new and has
+        not been messaged yet.
+        
+        Returns
+        -------
+            match : Match
+                A Match object for the new, unmessaged Tinder match that we are interested in
+                writing an introductory message for. This object contains the match's Chat ID,
+                name, age, work, place of study, location of home, gender, Tinder bio,
+                relationship preference, distance from you, and passions. 
+        """
+        # Format the match's list of passions as a comma separated string with 'and' between the
+        # last two passions (e.g., ['Sushi', 'Tennis', 'Running'] --> 'Sushi, Tennis, and Running')
+        passions = match.get_passions()
+        last_passion = passions[-1]
+        other_passions = ", ".join(str(x) for x in passions[:-1])
+        formatted_passions = f"{other_passions} and {last_passion}"
+        
+        # Build Gemini prompt to write introductory message
+        prompt = f"""Task: Write an introductory message to a girl named {match.get_name()} that I met on a dating app.
+
+Context: {match.get_name()} is a {match.get_age()}-year-old girl that lives in Boston. She is passionate about {formatted_passions}.
+
+Examples:
+- For a 21-year-old girl from Boston named Maria that is passionate about Tennis -> "Tennis this weekend? I can pick you up."
+- For a 19-year-old girl from Boston named Jenna that is passionate about painting and sushi -> "How about we show each other our favorite paintings at the MFA and then I buy you some sushi at a great spot across the street?
+- For a 22-year-old girl from Boston named Maya that is passionate about ramen -> "Ramen date on me?"
+
+Format: A concise 1-2 sentence text message with no exclamation points. Do not include bracketed text  like "[sushi restaurant near you]" or “[Rock climbing gym in Boston]”; instead, provide real  locations in Boston in your message."""
+        
+        # Send a request to the Google Gemini API
+        url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent"
+        headers = { 
+            "Content-Type": "application/json", 
+            "x-goog-api-key": api_key 
+        }
+        data = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": prompt}]
+                }
+            ]
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 200:
+            response_data = response.json()
+            return response_data['candidates'][0]['content']['parts'][0]['text']
+        else:
+            print(f"Request failed with status code: {response.status_code}")
+            print(response.text)
+
     def get_chat_ids(self):
         """Clicks into the 'Matches' tab on Tinder to see new matches and then scrapes the Chat ID
         associated with each match. These Chat IDs act as unique identifiers for each match on Tinder.
