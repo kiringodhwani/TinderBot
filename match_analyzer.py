@@ -34,7 +34,7 @@ class MatchAnalyzer:
         various pieces of information from these profiles (see the Match class). Then, sends
         a message to each new match based on the scraped information.
     
-    send_intro_message(chatid):
+    send_intro_message(match):
         Sends an introductory message to a specific match. 
     
     create_message(match):
@@ -96,7 +96,7 @@ class MatchAnalyzer:
         """
         self.driver = driver
         
-    def get_all_new_matches(self):
+    def get_and_message_all_new_matches(self):
         """Gets the Chat IDs of all the user's new, unmessaged Tinder matches and then scrapes 
         various pieces of information from these profiles (see the Match class). Then, sends
         a message to each new match based on the scraped information.
