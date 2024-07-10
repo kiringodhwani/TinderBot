@@ -61,17 +61,16 @@ class OpenLoginTinder:
         
         # Click the log in button to open the login options (e.g., Facebook, Google,...)
         xpath = '//div[contains(text(), "Log in")]'
-        login_button = WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        login_button = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, xpath)))
         login_button.click()
         self.handle_potential_popups() # Possible Cookie Button
-        sleep(5)
         
         # Log in with Facebook
         self.facebook_login()
-        sleep(150) #15
+        sleep(75) #15
         
         self.handle_potential_popups() 
-        sleep(15)
+        sleep(5)
         return self.driver
     
     def facebook_login(self):
@@ -80,11 +79,10 @@ class OpenLoginTinder:
         """
         # Find and click the Facebook login button
         xpath = '//div[contains(text(), "Log in with Facebook")]'
-        login_with_facebook = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        login_with_facebook = WebDriverWait(self.driver, 1).until(EC.presence_of_element_located((By.XPATH, xpath)))
         login_with_facebook.click()
 
         # Save references to Tinder and Facebook windows
-        sleep(5)
         base_window = self.driver.window_handles[0]
         fb_popup_window = self.driver.window_handles[1]
         
@@ -92,7 +90,6 @@ class OpenLoginTinder:
         self.driver.switch_to.window(fb_popup_window)
 
         self.handle_potential_popups()
-        sleep(2)
 
         # Input Facebook login (i.e., email and password)
         email_field = self.driver.find_element(By.NAME, 'email')

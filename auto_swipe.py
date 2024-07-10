@@ -91,16 +91,15 @@ class AutoSwipe:
             ratio : float
                 How often profiles should be swiped right on (e.g, 0.7 --> 70% of the time)
         """
-        time.sleep(5)
         self.handle_potential_popups() # Say 'Maybe Later' to See Who Liked You and close Tinder Web Exclusive pop Up
-        time.sleep(50)
+        print()
 
         start = time.time()
         amount_liked = 0
         while amount_liked < number_to_like:
             # --------------------------------------------------------------
             # Possible end conditions where we can no longer make likes:
-            #  1. No more remaining daily likes
+            #  1. Ran out of potential matches in the area
             try:
                 xpath = '//div[contains(text(), "Go Global")]'
                 self.driver.find_element('xpath', xpath)
@@ -108,10 +107,11 @@ class AutoSwipe:
                 break
             except NoSuchElementException:
                 pass
-            #  2. Ran out of potential matches in the area
+            #  2. No more remaining daily likes
             try:
-                xpath = '//*[@id="q-314954669"]/div/div/div[1]/div[3]/div[1]/div[2]/div/div[1]/span[1]/div/div'
-                self.driver.find_element('xpath', xpath)
+                xpath = '//*[@id="u1146625330"]/div/div/div[2]/button'
+                close_ran_out_of_likes_popup = self.driver.find_element('xpath', xpath)
+                close_ran_out_of_likes_popup.click()
                 self.auto_swipe_stats['like'] -= 1  # To get this pop up, the bot must have tried to like the last person. This
                                                     # like does go through, but our # of likes for the session is still
                                                     # incremented by 1. To ensure this like doesn't count, we decrement

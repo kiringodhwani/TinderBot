@@ -215,11 +215,11 @@ class MatchAnalyzer:
 Context: {match.get_name()} is a {match.get_age()}-year-old girl that lives in Boston. She is passionate about {formatted_passions}.
 
 Examples:
-- For a 21-year-old girl from Boston named Maria that is passionate about Tennis -> "Tennis this weekend? I can pick you up."
-- For a 19-year-old girl from Boston named Jenna that is passionate about painting and sushi -> "How about we show each other our favorite paintings at the MFA and then I buy you some sushi at a great spot across the street?
-- For a 22-year-old girl from Boston named Maya that is passionate about ramen -> "Ramen date on me?"
+- For a 21-year-old girl from Boston named Maria that is passionate about Tennis -> "Hey {match.get_name()}. Tennis this weekend at Dean park? I can pick you up."
+- For a 19-year-old girl from Boston named Jenna that is passionate about painting and sushi -> "Hey {match.get_name()}. How about we show each other our favorite paintings at the Museum of Fine Arts and then I buy you some sushi down the street at Douzo Sushi?
+- For a 22-year-old girl from Boston named Maya that is passionate about ramen -> "Hey {match.get_name()}. Ramen date at Ganko Ittetsu on me?"
 
-Format: A concise 1-2 sentence text message with no exclamation points. Do not include bracketed text  like "[sushi restaurant near you]" or “[Rock climbing gym in Boston]”; instead, provide real  locations in Boston in your message."""
+Format: A concise 1-2 sentence text message with no exclamation points and no return characters. Do not include bracketed text like "[sushi restaurant near you]" or “[Rock climbing gym in Boston]”; instead, provide real locations in Boston in your message. If your message includes bracketed text instead of real locations than everything will explode."""
         
         # Send a request to the Google Gemini API
         url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent"
