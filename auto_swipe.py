@@ -130,7 +130,7 @@ class AutoSwipe:
                 actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0) # Test click
                 actions.move_by_offset(260, 70).click().perform()
                 for i in range(random.randint(6, 11)):
-                    if i < 4 or random.random() <= 0.7:
+                    if i < 4 or random.random() <= 0.6:
                         # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
                         print('Right Image')
                         actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
@@ -211,7 +211,7 @@ class AutoSwipe:
         
         # Close Tinder Web Exclusive Pop Up
         try:
-            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/button'
+            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/button'
             close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
             close_tinder_web_exclusive_button.click()
             print('Closed Tinder Web Exclusive pop up')
@@ -222,10 +222,22 @@ class AutoSwipe:
        
         # Close "It's a Match!" pop up
         try:
-            xpath = '//*[@id="u-1089589689"]/div/div/div[1]/div/div[4]/button'
+            #xpath = '//*[@id="u-1089589689"]/div/div/div[1]/div/div[4]/button'
+            xpath = '//*[@id="t371990310"]/div/div/div[1]/div/div[4]/button'
             close_ItsAMatch_button = self.driver.find_element('xpath', xpath)
             close_ItsAMatch_button.click()
-            print('Closed "It\'s a Match! pop up')
+            print('Closed "It\'s a Match!" pop up')
+            time.sleep(3)
+            self.handle_potential_popups()
+        except:
+            pass
+        
+        # Close "Add Tinder to Home Screen pop up"
+        try:
+            xpath = '//*[@id="u1146625330"]/div/div/div[2]/button'
+            close_ItsAMatch_button = self.driver.find_element('xpath', xpath)
+            close_ItsAMatch_button.click()
+            print('Closed "Add Tinder to Home Screen" pop up')
             time.sleep(3)
             self.handle_potential_popups()
         except:

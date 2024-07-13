@@ -175,14 +175,17 @@ class MatchAnalyzer:
             xpath = '//textarea'
             time.sleep(5)
 
-            WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.XPATH,xpath)))
+            #WebDriverWait(self.driver, 5).until(
+            #    EC.presence_of_element_located((By.XPATH,xpath)))
 
-            textbox = self.driver.find_element(By.XPATH, xpath)
-            textbox.send_keys(message)
+            #textbox = self.driver.find_element(By.XPATH, xpath)
+            #textbox.send_keys(message)
+
+
+            
             #textbox.send_keys(Keys.ENTER) # this line sends the message which we don't actually want to do
 
-            print("Message sent succesfully.\n".format(message))
+            print("Message sent succesfully.\n")
 
             # sleep so message can be sent
             time.sleep(1.5)
@@ -284,8 +287,11 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
             div = self.driver.find_element(By.XPATH, xpath)
-            
-            list_refs = div.find_elements(By.XPATH, '//*[@id="u-2072757490"]/ul/li/a')
+
+            # //*[@id="t-611177491"]/ul/li[2]
+            # //*[@id="t-611177491"]/ul/li[3]
+            # //*[@id="t-611177491"]/ul/li[4]
+            list_refs = div.find_elements(By.XPATH, '//*[@id="t-611177491"]/ul/li/a')
             for index in range(len(list_refs)):
                 try:
                     ref = list_refs[index].get_attribute('href')
@@ -319,7 +325,8 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
         """
         if not self.is_chat_opened(chatid):
             self.open_chat(chatid)
-            
+
+        time.sleep(10)
         name = self.get_name(chatid)
         age = self.get_age(chatid)
         bio = self.get_bio(chatid)
@@ -428,7 +435,8 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
             self.open_chat(chatid)
 
         try:
-            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1'
+            #xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1'
+            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div[1]/h1'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
             name = element.text
@@ -455,7 +463,8 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
         age = None
 
         try:
-            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/span'
+            #xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/span'
+            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/span'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.XPATH, xpath)))
@@ -624,7 +633,7 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
         
         # Close Tinder Web Exclusive Pop Up
         try:
-            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/button'
+            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/button'
             close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
             close_tinder_web_exclusive_button.click()
             print('Closed Tinder Web Exclusive pop up')

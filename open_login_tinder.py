@@ -54,23 +54,24 @@ class OpenLoginTinder:
             self.driver : webdriver.Chrome
                 The WebDriver instance for Chrome that contains the logged into Tinder page. 
         """
-        sleep(2)
-        
         # Open Tinder in a Chrome window
         self.driver.get('https://tinder.com')
+
+        sleep(2)
+        self.handle_potential_popups() # Possible Cookie Button
+        sleep(3)
         
         # Click the log in button to open the login options (e.g., Facebook, Google,...)
         xpath = '//div[contains(text(), "Log in")]'
         login_button = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.XPATH, xpath)))
         login_button.click()
-        self.handle_potential_popups() # Possible Cookie Button
         
         # Log in with Facebook
         self.facebook_login()
-        sleep(75) #15
+        sleep(3)
         
         self.handle_potential_popups() 
-        sleep(5)
+        sleep(15)
         return self.driver
     
     def facebook_login(self):
@@ -116,7 +117,7 @@ class OpenLoginTinder:
             cookies_accept_button = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
             cookies_accept_button.click()
             print('Accepted Cookies')
-            time.sleep(3)
+            time.sleep(8)
             self.handle_potential_popups()
         except:
             pass
@@ -127,18 +128,18 @@ class OpenLoginTinder:
             allow_location_button = self.driver.find_element('xpath', xpath)
             allow_location_button.click()
             print('Allowed Location')
-            time.sleep(3)
+            time.sleep(8)
             self.handle_potential_popups()
         except:
             pass
         
         # Deny Notifications Popup
         try:
-            xpath = '//*[@id="u1146625330"]/div/div/div/div/div[3]/button[2]'
+            xpath = '//*[@id="t-1686761967"]/div/div/div/div/div[3]/button[2]'
             notifications_button = self.driver.find_element('xpath', xpath)
             notifications_button.click()
             print('Denied Notifications')
-            time.sleep(3)
+            time.sleep(8)
             self.handle_potential_popups()
         except:
             pass
