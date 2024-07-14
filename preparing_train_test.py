@@ -1,27 +1,23 @@
 import cv2
+
 import numpy as np
-import matplotlib.pyplot as plt
-import cvlib as cv
-from cvlib.object_detection import draw_bbox
-from numpy.lib.polynomial import poly
-import dlib 
-import mtcnn
-from mtcnn.mtcnn import MTCNN
-
-
-from os import listdir
-from os.path import isdir
-from PIL import Image
-from matplotlib import pyplot
 from numpy import savez_compressed
 from numpy import asarray
-
-from numpy import load
-
 from numpy import load
 from numpy import expand_dims
 from numpy import asarray
 from numpy import savez_compressed
+from numpy.lib.polynomial import poly
+
+import matplotlib.pyplot as plt
+import cvlib as cv
+from cvlib.object_detection import draw_bbox
+import dlib 
+import mtcnn
+from mtcnn.mtcnn import MTCNN
+
+from os import listdir
+from os.path import isdir
 from keras_facenet import FaceNet
 import tensorflow as tf
 
