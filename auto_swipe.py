@@ -130,7 +130,7 @@ class AutoSwipe:
                 actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0) # Test click
                 actions.move_by_offset(260, 70).click().perform()
                 for i in range(random.randint(6, 11)):
-                    if i < 4 or random.random() <= 0.6:
+                    if i < 3 or random.random() <= 0.7:
                         # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
                         print('Right Image')
                         actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)

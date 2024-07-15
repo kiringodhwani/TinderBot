@@ -100,7 +100,7 @@ def load_dataset(directory):
     return asarray(X), asarray(y)
 
 def get_embedding(model, face_pixels):
-    face_pixels = face_pixels.astype('float32')
+    face_pixels = face_pixels.astype('float64')
     
     # standardize pixel values across channels (global)
     mean, std = face_pixels.mean(), face_pixels.std()
