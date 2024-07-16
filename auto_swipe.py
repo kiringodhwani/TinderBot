@@ -39,7 +39,7 @@ class AutoSwipe:
         right on 'number_to_like' profiles in total. Handles any pop ups that appear during the
         auto swiping process.
         
-    access_current_image():
+    access_current_image(image_number):
         Accesses and downloads the current image of the current profile on the Tinder page.
         
     auto_swipe(number_to_like, ratio=0.7):
@@ -169,11 +169,6 @@ class AutoSwipe:
                 What number image we are on for the current profile. For the first image in the current user's
                 profile, image_number = 1. For the second image in the current user's profile, image_number = 2.
                 Etc.
-        
-        Returns
-        -------
-            src : str
-                The image URL of the current image on the current Tinder profile. 
         """
         xpath = f'//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[1]/span/div/div[1]/span[{image_number}]/div/div'
         img = self.driver.find_element('xpath', xpath)
