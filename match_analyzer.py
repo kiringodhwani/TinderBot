@@ -14,8 +14,6 @@ import pprint
 from config import email, password, api_key
 from match import Match
 
-content = '/html/body/div[1]'
-
 class MatchAnalyzer:
     """
     A class for scraping important information from your Tinder matches (i.e., Chat ID, name, 

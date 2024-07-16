@@ -68,7 +68,7 @@ class OpenLoginTinder:
         
         # Log in with Facebook
         self.facebook_login()
-        sleep(3)
+        sleep(50)
         
         self.handle_potential_popups() 
         sleep(15)
@@ -82,7 +82,8 @@ class OpenLoginTinder:
         xpath = '//div[contains(text(), "Log in with Facebook")]'
         login_with_facebook = WebDriverWait(self.driver, 1).until(EC.presence_of_element_located((By.XPATH, xpath)))
         login_with_facebook.click()
-
+        sleep(3)
+        
         # Save references to Tinder and Facebook windows
         base_window = self.driver.window_handles[0]
         fb_popup_window = self.driver.window_handles[1]

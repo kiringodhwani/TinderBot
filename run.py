@@ -13,7 +13,8 @@ print('Opened and logged into Tinder!\n')
 number_to_like = 50
 print(f'Start auto-swiping to like {number_to_like} profiles...')
 AutoSwipe = AutoSwipe(driver=driver)
-AutoSwipe.auto_swipe(number_to_like=number_to_like, ratio=0.7)
+#AutoSwipe.auto_swipe(number_to_like=number_to_like, ratio=0.7)
+AutoSwipe.face_recognition_smart_swipe(number_to_like=number_to_like)
 print('Done auto-swiping!\n')
 
 # # Analyze Matches

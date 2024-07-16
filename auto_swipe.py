@@ -8,6 +8,8 @@ from selenium.webdriver.common.by import By
 
 import time
 import random
+import urllib
+import requests
 
 from config import email, password
 
@@ -31,6 +33,15 @@ class AutoSwipe:
         
     Methods
     -------
+    face_recognition_smart_swipe(number_to_like): 
+        Smart swipes through the profiles in an open, logged-into Tinder page in Chrome. Only
+        swipes right on (i.e., 'likes') the profiles of people who resemble Mindy Kaling. Swipes
+        right on 'number_to_like' profiles in total. Handles any pop ups that appear during the
+        auto swiping process.
+        
+    access_current_image():
+        Accesses and downloads the current image of the current profile on the Tinder page.
+        
     auto_swipe(number_to_like, ratio=0.7):
         Auto swipes through the profiles in an open, logged-into Tinder page in Chrome. Swipes
         right on (i.e., 'likes') 'number_to_like' profiles and uses 'ratio' to determine how
@@ -74,6 +85,104 @@ class AutoSwipe:
             "like": 0,
             "dislike": 0,
         }
+    
+    def face_recognition_smart_swipe(self, number_to_like):
+        """Smart swipes through the profiles in an open, logged-into Tinder page in Chrome. Only
+        swipes right on (i.e., 'likes') the profiles of people who resemble Mindy Kaling. Swipes
+        right on 'number_to_like' profiles in total. Handles any pop ups that appear during the
+        auto swiping process.
+        
+        Parameters
+        ----------
+            number_to_like : int
+                The total number of profiles to be swiped right on ('liked')
+        """
+        self.handle_potential_popups() # Say 'Maybe Later' to See Who Liked You and close Tinder Web Exclusive pop Up
+        print()
+
+        start = time.time()
+        amount_liked = 0
+        while amount_liked < number_to_like:
+            # --------------------------------------------------------------
+            # Possible end conditions where we can no longer make likes:
+            #  1. Ran out of potential matches in the area
+            try:
+                xpath = '//div[contains(text(), "Go Global")]'
+                self.driver.find_element('xpath', xpath)
+                print('Ran out of potential matches in the area.\n')
+                break
+            except NoSuchElementException:
+                pass
+            #  2. No more remaining daily likes
+            try:
+                xpath = '//*[@id="u1146625330"]/div/div/div[2]/button'
+                close_ran_out_of_likes_popup = self.driver.find_element('xpath', xpath)
+                close_ran_out_of_likes_popup.click()
+                self.auto_swipe_stats['like'] -= 1  # To get this pop up, the bot must have tried to like the last person. This
+                                                    # like does go through, but our # of likes for the session is still
+                                                    # incremented by 1. To ensure this like doesn't count, we decrement
+                                                    # the number of likes for the current session here.
+                print('No more likes remaining for today.\n')
+                break
+            except NoSuchElementException:
+                pass
+            # --------------------------------------------------------------
+            
+            # Click the information button to expand the profile
+            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div[3]/div/div/div/div/div[1]/button'
+            information_button = self.driver.find_element('xpath', xpath)
+            information_button.click()
+            time.sleep(2)
+
+            # Flip through the current profile's set of photos. Apply a facial recognition classifier that is
+            # trained to recognize faces that resemble Mindy Kaling. Apply the facial recognition classifier
+            # to images in the current user's profile that have only one face and swipe right if the model
+            # detects Mindy Kaling with a confidence of at least 0.9. Otherwise, swipes left.
+            actions = ActionChains(self.driver)
+            image_number = 1
+            try:
+                while True:
+                    cur_image = self.access_current_image(image_number=image_number)
+
+                    # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
+                    print('Right Image')
+                    actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
+                    actions.move_by_offset(260, 70).click().perform()
+
+                    image_number += 1
+
+                    time.sleep(2)
+                    
+            except NoSuchElementException:
+                print('Flipped through all photos for the current profile.')
+                
+            amount_liked += 1
+            print(f'Processed profile {amount_liked}')
+            time.sleep(20)
+                
+    def access_current_image(self, image_number):
+        """Accesses and downloads the current image of the current profile on the Tinder page.
+        
+        Parameters
+        ----------
+            image_number : int
+                What number image we are on for the current profile. For the first image in the current user's
+                profile, image_number = 1. For the second image in the current user's profile, image_number = 2.
+                Etc.
+        
+        Returns
+        -------
+            src : str
+                The image URL of the current image on the current Tinder profile. 
+        """
+        xpath = f'//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[1]/span/div/div[1]/span[{image_number}]/div/div'
+        img = self.driver.find_element('xpath', xpath)
+        
+        # Access and store image url
+        image_url = img.value_of_css_property('background-image').split('\"')[1]
+            
+        # Retrieve and download the image
+        urllib.request.urlretrieve(str(image_url),f"sample_data/im{str(image_number)}.jpg")
     
     def auto_swipe(self, number_to_like, ratio=0.7):
         """Auto swipes through the profiles in an open, logged-into Tinder page in Chrome. Swipes
