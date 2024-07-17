@@ -10,6 +10,12 @@ import time
 import random
 import urllib
 import requests
+import os
+
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+from mtcnn.mtcnn import MTCNN
 
 from config import email, password
 
@@ -38,6 +44,14 @@ class AutoSwipe:
         swipes right on (i.e., 'likes') the profiles of people who resemble Mindy Kaling. Swipes
         right on 'number_to_like' profiles in total. Handles any pop ups that appear during the
         auto swiping process.
+    
+    count_faces(filename):
+        Counts the number of faces in an image. If the image has exactly 1 face, then also returns
+        the pixel coordinates of the bounding box for the face. 
+    
+    extract_face(filename, x1, x2, y1, y2):
+        Provided an image with only one face and the pixel coordinates of the bounding box for
+        the face, extracts the face from the image. 
         
     access_current_image(image_number):
         Accesses and downloads the current image of the current profile on the Tinder page.
@@ -67,11 +81,17 @@ class AutoSwipe:
         includes declining a pop up that asks if you want to 'See Who Likes You', closing a pop up
         advertising 'Tinder Web Exclusive', and closing the 'It's a Match!' pop up that appeares
         when you swipe right on someone that also swiped right on you. 
+    
+    delete_files_in_directory(directory_path):
+        Deletes all of the files in a directory.
     """
     
     def __init__(self, driver):
         """Initializes a new instance of the AutoSwipe class. Stores the WebDriver instance and
-           a dictionary to track the stats of the auto swiping session.
+           a dictionary to track the stats of the auto swiping session. Also instantiates a
+           Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. This is
+           a deep learning model presented in "Joint Face Detection and Alignment Using Multitask 
+           Cascaded Convolutional Networks" from 2016.
         
         Parameters
         ----------
@@ -85,6 +105,7 @@ class AutoSwipe:
             "like": 0,
             "dislike": 0,
         }
+        self.detector = MTCNN()
     
     def face_recognition_smart_swipe(self, number_to_like):
         """Smart swipes through the profiles in an open, logged-into Tinder page in Chrome. Only
@@ -142,7 +163,12 @@ class AutoSwipe:
             image_number = 1
             try:
                 while True:
-                    cur_image = self.access_current_image(image_number=image_number)
+                    self.access_current_image(image_number=image_number)
+                    
+                    path = f'sample_data/im{str(image_number)}.jpg'
+                    count, x1, x2, y1, y2 = self.count_faces(path)
+                    if count == 1:
+                        face = self.extract_face(path, x1, x2, y1, y2)
 
                     # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
                     print('Right Image')
@@ -151,14 +177,109 @@ class AutoSwipe:
 
                     image_number += 1
 
-                    time.sleep(2)
+                    cur_sleep_length = random.uniform(1.5, 4.0)
+                    time.sleep(cur_sleep_length)
                     
             except NoSuchElementException:
                 print('Flipped through all photos for the current profile.')
-                
+            
+            # Delete all of the photos saved from the current Tinder profile.
+            self.delete_files_in_directory('sample_data')
+            
+            print("Right swipe ('like') current photo")
             amount_liked += 1
-            print(f'Processed profile {amount_liked}')
-            time.sleep(20)
+            self.auto_swipe_stats['like'] += 1
+            self.right_swipe()
+            
+            time.sleep(5)
+            self.handle_potential_popups()
+            
+            # Randomize sleep between likes
+            cur_sleep_length = random.uniform(3.0, 5.0)
+            print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}\n")
+            time.sleep(cur_sleep_length)
+           
+        duration = int(time.time() - start)
+        self.auto_swipe_stats["session_duration"] = duration
+        self.print_auto_swipe_stats()
+          
+            
+    def count_faces(self, filename):
+        """Counts the number of faces in an image. If the image has exactly 1 face, then also returns
+        the pixel coordinates of the bounding box for the face. 
+        
+        Parameters
+        ----------
+            filename : str
+                The filename of the image to be analyzed.
+        
+        Returns
+        -------
+            num_faces : int
+                The number of faces in the image.
+            x1 : int, x2 : int, y1: int, y2: int
+                The pixel coordinates of the bounding box for the face.
+        """
+        img = cv2.imread(filename)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) 
+        pixels = np.asarray(img)
+
+        results = self.detector.detect_faces(pixels)
+
+        for i, face in enumerate(results): 
+            x1, y1, width, height = face['box']
+            x1, y1 = abs(x1), abs(y1)
+            x2, y2 = x1 + width, y1 + height
+
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2) 
+
+            # Display the box and faces 
+            cv2.putText(img, 'face num'+str(i), (x1-10, y1-10), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2) 
+
+        output = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        plt.figure(figsize=(10, 10))
+        plt.axis("off")
+        plt.imshow(output)
+        plt.show()
+        
+        num_faces = len(results)
+        if num_faces != 1:
+            print(f'{num_faces} faces found in the current photo. Flipping to next photo...')
+            return num_faces, 0, 0, 0, 0
+        else:  
+            print(f'{num_faces} faces found in photo. Extracting face and applying facial recognition classifier...')
+            return num_faces, x1, x2, y1, y2
+        
+    
+    def extract_face(self, filename, x1, x2, y1, y2):
+        """Provided an image with only one face and the pixel coordinates of the bounding box for
+        the face, extracts the face from the image. 
+        
+        Parameters
+        ----------
+            filename : str
+                The filename of the image to be analyzed.
+            x1 : int, x2 : int, y1: int, y2: int
+                The pixel coordinates of the bounding box for the face.
+        
+        Returns
+        -------
+            face_array : list
+                The extracted face.
+        """
+        img = cv2.imread(filename)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) 
+        pixels = np.asarray(img)
+
+        face = pixels[y1:y2, x1:x2]
+        face_array = cv2.resize(face, (224, 224))
+
+        fig, ax = plt.subplots(figsize=(5, 5))
+        plt.imshow(face_array)
+        plt.show()
+        return face_array
+    
                 
     def access_current_image(self, image_number):
         """Accesses and downloads the current image of the current profile on the Tinder page.
@@ -178,6 +299,7 @@ class AutoSwipe:
             
         # Retrieve and download the image
         urllib.request.urlretrieve(str(image_url),f"sample_data/im{str(image_number)}.jpg")
+        
     
     def auto_swipe(self, number_to_like, ratio=0.7):
         """Auto swipes through the profiles in an open, logged-into Tinder page in Chrome. Swipes
@@ -346,3 +468,21 @@ class AutoSwipe:
             self.handle_potential_popups()
         except:
             pass
+
+    def delete_files_in_directory(self, directory_path):
+        """Deletes all of the files in a directory.
+        
+        Parameters
+        ----------
+            directory_path : str
+                The directory to have all of its files deleted.
+        """
+        try:
+            files = os.listdir(directory_path)
+            for file in files:
+                file_path = os.path.join(directory_path, file)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            print(f"All photos for the current profile deleted successfully from {directory_path}.")
+        except OSError:
+            print("Error occurred while deleting files.")
