@@ -39,6 +39,15 @@ class AutoSwipe:
     auto_swipe_stats : dict
         Tracks the duration of the current auto swiping session and the number of likes and
         dislikes that have occurred.
+    
+    detector : mtcnn.mtcnn.MTCNN
+        Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. This is
+        a deep learning model presented in "Joint Face Detection and Alignment Using Multitask 
+        Cascaded Convolutional Networks" from 2016.
+    
+    face_embedding_model : keras.src.models.functional.Functional
+        A pretrained neural network called ResNet50 (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50)
+        for creating face embeddings from faces.
         
     Methods
     -------
@@ -97,9 +106,9 @@ class AutoSwipe:
            a dictionary to track the stats of the auto swiping session. Also instantiates a
            Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. This is
            a deep learning model presented in "Joint Face Detection and Alignment Using Multitask 
-           Cascaded Convolutional Networks" from 2016. Lastly, instantiates a pretrained model 
-           (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50) for creating
-           face embeddings from faces.
+           Cascaded Convolutional Networks" from 2016. Lastly, instantiates a pretrained neural network
+           called ResNet50 (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50)
+           for creating face embeddings from faces.
         
         Parameters
         ----------
