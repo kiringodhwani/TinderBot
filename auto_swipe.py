@@ -11,11 +11,14 @@ import random
 import urllib
 import requests
 import os
+import pickle
 
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from mtcnn.mtcnn import MTCNN
+import tensorflow as tf
+from sklearn.preprocessing import Normalizer
 
 from config import email, password
 
@@ -44,6 +47,9 @@ class AutoSwipe:
         swipes right on (i.e., 'likes') the profiles of people who resemble Mindy Kaling. Swipes
         right on 'number_to_like' profiles in total. Handles any pop ups that appear during the
         auto swiping process.
+        
+    get_face_embedding(face_pixels):
+        Gets the face embedding for one face.
     
     count_faces(filename):
         Counts the number of faces in an image. If the image has exactly 1 face, then also returns
@@ -91,7 +97,9 @@ class AutoSwipe:
            a dictionary to track the stats of the auto swiping session. Also instantiates a
            Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. This is
            a deep learning model presented in "Joint Face Detection and Alignment Using Multitask 
-           Cascaded Convolutional Networks" from 2016.
+           Cascaded Convolutional Networks" from 2016. Lastly, instantiates a pretrained model 
+           (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50) for creating
+           face embeddings from faces.
         
         Parameters
         ----------
@@ -106,6 +114,7 @@ class AutoSwipe:
             "dislike": 0,
         }
         self.detector = MTCNN()
+        self.face_embedding_model = tf.keras.applications.ResNet50(weights='imagenet')
     
     def face_recognition_smart_swipe(self, number_to_like):
         """Smart swipes through the profiles in an open, logged-into Tinder page in Chrome. Only
@@ -120,7 +129,14 @@ class AutoSwipe:
         """
         self.handle_potential_popups() # Say 'Maybe Later' to See Who Liked You and close Tinder Web Exclusive pop Up
         print()
-
+        
+        # Load the Mindy Kaling facial recognition classifier.
+        with open('mlpclassifier_v1.pkl', 'rb') as f:
+            model = pickle.load(f)
+            
+        # For normalizing face embeddings.
+        in_encoder = Normalizer(norm='l2')
+        
         start = time.time()
         amount_liked = 0
         while amount_liked < number_to_like:
@@ -165,43 +181,91 @@ class AutoSwipe:
                 while True:
                     self.access_current_image(image_number=image_number)
                     
+                    # Count the number of faces in the image. If there is exactly 1 face, then extract it.
                     path = f'sample_data/im{str(image_number)}.jpg'
                     count, x1, x2, y1, y2 = self.count_faces(path)
                     if count == 1:
                         face = self.extract_face(path, x1, x2, y1, y2)
+                        
+                        # Get face embedding of the extracted face.
+                        face_embedding = self.get_face_embedding(face)
+                        
+                        # Normalize face embedding.
+                        face_embedding = in_encoder.transform(face_embedding.reshape(1, -1))
+                        
+                        # Apply the Mindy Kaling facial recognition classifier to the normalized face embedding. 
+                        # If the model has at least 90% confidence that the face is Mindy Kaling (i.e., there
+                        # is strong resemblance between the person and Mindy Kaling), then the bot swipes right
+                        # (i.e., "likes") the current profile.
+                        samples = np.expand_dims(face_embedding[0], axis=0)
+                        yhat_prob = model.predict_proba(samples)
+                        time.sleep(3)
+                        if yhat_prob[0][0] >= 0.95:
+                            print(f"\n{yhat_prob[0][0] * 100}% confidence that the current person is Mindy Kaling, indicating strong resemblance. Right swipe ('like') current profile.\n")
+                            amount_liked += 1
+                            self.auto_swipe_stats['like'] += 1
+                            time.sleep(10)
+                            self.right_swipe()
+                            break
+                        else:
+                            print(f"\n{yhat_prob[0][0] * 100}% confidence that the current person is Mindy Kaling, indicating weak resemblance. Flipping to next photo in current user's profile.\n")
 
                     # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
-                    print('Right Image')
+                    print('Right Image\n')
                     actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0)
                     actions.move_by_offset(260, 70).click().perform()
 
                     image_number += 1
 
-                    cur_sleep_length = random.uniform(1.5, 4.0)
+                    cur_sleep_length = random.uniform(3.0, 5.0)
                     time.sleep(cur_sleep_length)
                     
             except NoSuchElementException:
-                print('Flipped through all photos for the current profile.')
+                print("Flipped through all photos for the current profile without finding resemblance to Mindy Kaling. Left swipe ('dislike') current profile.\n")
+                self.auto_swipe_stats['dislike'] += 1
+                self.left_swipe()
             
             # Delete all of the photos saved from the current Tinder profile.
             self.delete_files_in_directory('sample_data')
             
-            print("Right swipe ('like') current photo")
-            amount_liked += 1
-            self.auto_swipe_stats['like'] += 1
-            self.right_swipe()
-            
+            # Handle any pop ups that occur after swiping (e.g., "It's a Match!" pop up).
             time.sleep(5)
             self.handle_potential_popups()
             
-            # Randomize sleep between likes
+            # Randomize sleep between likes.
             cur_sleep_length = random.uniform(3.0, 5.0)
-            print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}\n")
+            print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}")
+            term_size = os.get_terminal_size()
+            print('-' * term_size.columns)
+            print()
             time.sleep(cur_sleep_length)
            
         duration = int(time.time() - start)
         self.auto_swipe_stats["session_duration"] = duration
         self.print_auto_swipe_stats()
+        
+        
+    def get_face_embedding(self, face_pixels):
+        """Gets the face embedding for one face.
+        
+        Parameters
+        ----------
+            face_pixels : numpy.ndarray
+                The face to get the embedding for.
+        
+        """
+        face_pixels = face_pixels.astype('float64')
+
+        # Standardize pixel values across channels (global).
+        mean, std = face_pixels.mean(), face_pixels.std()
+        face_pixels = (face_pixels - mean) / std
+
+        # Transform face into one sample.
+        samples = np.expand_dims(face_pixels, axis=0)
+
+        # Make prediction to get embedding.
+        yhat = self.face_embedding_model.predict(samples)
+        return yhat[0]
           
             
     def count_faces(self, filename):
@@ -245,10 +309,10 @@ class AutoSwipe:
         
         num_faces = len(results)
         if num_faces != 1:
-            print(f'{num_faces} faces found in the current photo. Flipping to next photo...')
+            print(f'\n{num_faces} faces found in the current photo. Flipping to next photo...\n')
             return num_faces, 0, 0, 0, 0
         else:  
-            print(f'{num_faces} faces found in photo. Extracting face and applying facial recognition classifier...')
+            print(f'\n{num_faces} faces found in photo. Extracting face and applying facial recognition classifier...\n')
             return num_faces, x1, x2, y1, y2
         
     
@@ -265,7 +329,7 @@ class AutoSwipe:
         
         Returns
         -------
-            face_array : list
+            face_array : numpy.ndarray
                 The extracted face.
         """
         img = cv2.imread(filename)
@@ -429,7 +493,7 @@ class AutoSwipe:
             xpath = '//div[contains(text(), "Maybe Later")]'
             close_see_who_liked_you_button = self.driver.find_element('xpath', xpath)
             close_see_who_liked_you_button.click()
-            print('Said "Maybe Later" to See Who Liked You')
+            print('\nSaid "Maybe Later" to See Who Liked You')
             time.sleep(3)
             self.handle_potential_popups()
         except:
@@ -440,7 +504,7 @@ class AutoSwipe:
             xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/button'
             close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
             close_tinder_web_exclusive_button.click()
-            print('Closed Tinder Web Exclusive pop up')
+            print('\nClosed Tinder Web Exclusive pop up')
             time.sleep(3)
             self.handle_potential_popups()
         except:
@@ -452,7 +516,7 @@ class AutoSwipe:
             xpath = '//*[@id="t371990310"]/div/div/div[1]/div/div[4]/button'
             close_ItsAMatch_button = self.driver.find_element('xpath', xpath)
             close_ItsAMatch_button.click()
-            print('Closed "It\'s a Match!" pop up')
+            print('\nClosed "It\'s a Match!" pop up\n')
             time.sleep(3)
             self.handle_potential_popups()
         except:
@@ -463,7 +527,7 @@ class AutoSwipe:
             xpath = '//*[@id="u1146625330"]/div/div/div[2]/button'
             close_ItsAMatch_button = self.driver.find_element('xpath', xpath)
             close_ItsAMatch_button.click()
-            print('Closed "Add Tinder to Home Screen" pop up')
+            print('\nClosed "Add Tinder to Home Screen" pop up\n')
             time.sleep(3)
             self.handle_potential_popups()
         except:
@@ -483,6 +547,6 @@ class AutoSwipe:
                 file_path = os.path.join(directory_path, file)
                 if os.path.isfile(file_path):
                     os.remove(file_path)
-            print(f"All photos for the current profile deleted successfully from {directory_path}.")
+            print(f"All photos for the current profile deleted successfully from {directory_path}.\n")
         except OSError:
             print("Error occurred while deleting files.")
