@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -139,9 +139,16 @@ class AutoSwipe:
         self.handle_potential_popups() # Say 'Maybe Later' to See Who Liked You and close Tinder Web Exclusive pop Up
         print()
         
-        # Load the Mindy Kaling facial recognition classifier.
-        with open('mlpclassifier_v1.pkl', 'rb') as f:
+        time.sleep(5)
+        
+#         # Load the Mindy Kaling facial recognition classifier.
+#         with open('mlpclassifier_v1.pkl', 'rb') as f:
+#             model = pickle.load(f)
+
+        # Load the East Asian or Not Classifier
+        with open('KNNclassifier_v1.pkl', 'rb') as f:
             model = pickle.load(f)
+        
             
         # For normalizing face embeddings.
         in_encoder = Normalizer(norm='l2')
@@ -174,17 +181,21 @@ class AutoSwipe:
                 pass
             # --------------------------------------------------------------
             
-            # Click the information button to expand the profile
-            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div[3]/div/div/div/div/div[1]/button'
-            information_button = self.driver.find_element('xpath', xpath)
-            information_button.click()
-            time.sleep(2)
-
+#             # Click the information button to expand the profile
+#             xpath = '//*[@id="c-1330188189"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div[3]/div/div/div/div/div[1]/button'
+#             information_button = WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, xpath)))
+#             information_button.click()
+#             time.sleep(2)
+            
+            # Click once to expand the profile
+            actions = ActionChains(self.driver)
+            actions.move_to_element_with_offset(self.driver.find_element(By.TAG_NAME,'body'), 0,0) # Test click
+            actions.move_by_offset(80, 70).click().perform()
+                
             # Flip through the current profile's set of photos. Apply a facial recognition classifier that is
             # trained to recognize faces that resemble Mindy Kaling. Apply the facial recognition classifier
             # to images in the current user's profile that have only one face and swipe right if the model
             # detects Mindy Kaling with a confidence of at least 0.9. Otherwise, swipes left.
-            actions = ActionChains(self.driver)
             image_number = 1
             try:
                 while True:
@@ -209,15 +220,15 @@ class AutoSwipe:
                         samples = np.expand_dims(face_embedding[0], axis=0)
                         yhat_prob = model.predict_proba(samples)
                         time.sleep(3)
-                        if yhat_prob[0][0] >= 0.95:
-                            print(f"\n{yhat_prob[0][0] * 100}% confidence that the current person is Mindy Kaling, indicating strong resemblance. Right swipe ('like') current profile.\n")
+                        if yhat_prob[0][0] >= 0.75:
+                            print(f"\n75+% confidence ({yhat_prob[0][0] * 100}%) that the current person is East Asian, indicating strong likelihood of being East Asian. Right swipe ('like') current profile.\n")
                             amount_liked += 1
                             self.auto_swipe_stats['like'] += 1
                             time.sleep(10)
                             self.right_swipe()
                             break
                         else:
-                            print(f"\n{yhat_prob[0][0] * 100}% confidence that the current person is Mindy Kaling, indicating weak resemblance. Flipping to next photo in current user's profile.\n")
+                            print(f"\nUnder 75% confidence ({yhat_prob[0][0] * 100}%) that the current person is East Asian, indicating weak likelihood of being East Asian. Flipping to next photo in profile.\n")
 
                     # To flip to right image, click 260 pixels right and 70 pixels up from the middle of the page.
                     print('Right Image\n')
@@ -229,9 +240,10 @@ class AutoSwipe:
                     cur_sleep_length = random.uniform(3.0, 5.0)
                     time.sleep(cur_sleep_length)
                     
-            except NoSuchElementException:
-                print("Flipped through all photos for the current profile without finding resemblance to Mindy Kaling. Left swipe ('dislike') current profile.\n")
+            except (NoSuchElementException, TimeoutException) as e:
+                print("Flipped through all photos for the current profile without finding a strong likelihood of being East Asian. Left swipe ('dislike') current profile.\n")
                 self.auto_swipe_stats['dislike'] += 1
+                time.sleep(2)
                 self.left_swipe()
             
             # Delete all of the photos saved from the current Tinder profile.
@@ -242,7 +254,7 @@ class AutoSwipe:
             self.handle_potential_popups()
             
             # Randomize sleep between likes.
-            cur_sleep_length = random.uniform(3.0, 5.0)
+            cur_sleep_length = random.uniform(6.0, 9.0)
             print(f"{amount_liked}/{number_to_like} liked, sleep: {cur_sleep_length}")
             term_size = os.get_terminal_size()
             print('-' * term_size.columns)
@@ -311,7 +323,7 @@ class AutoSwipe:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2) 
 
         output = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(5, 5))
         plt.axis("off")
         plt.imshow(output)
         plt.show()
@@ -321,7 +333,7 @@ class AutoSwipe:
             print(f'\n{num_faces} faces found in the current photo. Flipping to next photo...\n')
             return num_faces, 0, 0, 0, 0
         else:  
-            print(f'\n{num_faces} faces found in photo. Extracting face and applying facial recognition classifier...\n')
+            print(f'\n{num_faces} face found in photo. Extracting face and applying East Asian classifier...\n')
             return num_faces, x1, x2, y1, y2
         
     
@@ -364,8 +376,10 @@ class AutoSwipe:
                 profile, image_number = 1. For the second image in the current user's profile, image_number = 2.
                 Etc.
         """
-        xpath = f'//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[1]/span/div/div[1]/span[{image_number}]/div/div'
-        img = self.driver.find_element('xpath', xpath)
+        xpath = f'//*[@id="c-1330188189"]/div/div[1]/div/main/div[1]/div/div/div/div[1]/div[1]/div/div[1]/span/div/div[1]/span[{image_number}]/div/div'
+
+        #img = self.driver.find_element('xpath', xpath)
+        img = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
         
         # Access and store image url
         image_url = img.value_of_css_property('background-image').split('\"')[1]
@@ -510,7 +524,7 @@ class AutoSwipe:
         
         # Close Tinder Web Exclusive Pop Up
         try:
-            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/button'
+            xpath = '//*[@id="c-1330188189"]/div/div[1]/div/main/div[1]/div/button'
             close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
             close_tinder_web_exclusive_button.click()
             print('\nClosed Tinder Web Exclusive pop up')
@@ -521,7 +535,6 @@ class AutoSwipe:
        
         # Close "It's a Match!" pop up
         try:
-            #xpath = '//*[@id="u-1089589689"]/div/div/div[1]/div/div[4]/button'
             xpath = '//*[@id="t371990310"]/div/div/div[1]/div/div[4]/button'
             close_ItsAMatch_button = self.driver.find_element('xpath', xpath)
             close_ItsAMatch_button.click()

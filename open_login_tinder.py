@@ -68,7 +68,9 @@ class OpenLoginTinder:
         
         # Log in with Facebook
         self.facebook_login()
-        sleep(50)
+        sleep(10)
+
+        #sleep(100)
         
         self.handle_potential_popups() 
         sleep(15)
@@ -91,7 +93,7 @@ class OpenLoginTinder:
         # Switch to Facebook window
         self.driver.switch_to.window(fb_popup_window)
 
-        self.handle_potential_popups()
+        #self.handle_potential_popups()
 
         # Input Facebook login (i.e., email and password)
         email_field = self.driver.find_element(By.NAME, 'email')
@@ -136,7 +138,7 @@ class OpenLoginTinder:
         
         # Deny Notifications Popup
         try:
-            xpath = '//*[@id="t-1686761967"]/div/div/div/div/div[3]/button[2]'
+            xpath = '//*[@id="c1236398031"]/div/div/div/div/div[3]/button[2]'
             notifications_button = self.driver.find_element('xpath', xpath)
             notifications_button.click()
             print('Denied Notifications')

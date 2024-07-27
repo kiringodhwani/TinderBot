@@ -21,12 +21,12 @@ from os.path import isdir
 from keras_facenet import FaceNet
 import tensorflow as tf
 
+detector = MTCNN()
 def count_faces(filename):
     img = cv2.imread(filename)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR) 
     pixels = np.asarray(img)
 
-    detector = MTCNN()
     results = detector.detect_faces(pixels)
     
     for i, face in enumerate(results): 
@@ -100,6 +100,7 @@ def load_dataset(directory):
     return asarray(X), asarray(y)
 
 def get_embedding(model, face_pixels):
+    print(type(face_pixels))
     face_pixels = face_pixels.astype('float64')
     
     # standardize pixel values across channels (global)
@@ -113,20 +114,19 @@ def get_embedding(model, face_pixels):
     yhat = model.predict(samples)
     return yhat[0]
 
-trainX, trainy = load_dataset('celebrity_faces/train/')
+trainX, trainy = load_dataset('faces/train/')
 print(trainX.shape, trainy.shape)
-savez_compressed('mindy-or-no-dataset-train.npz', trainX, trainy)
+savez_compressed('asian-or-no-dataset-train.npz', trainX, trainy)
 
-testX, testy = load_dataset('celebrity_faces/val/')
+testX, testy = load_dataset('faces/val/')
 print(testX.shape, testy.shape)
-savez_compressed('mindy-or-no-dataset-test.npz', testX, testy)
+savez_compressed('asian-or-no-dataset-test.npz', testX, testy)
 
-embedder = FaceNet()
 model = tf.keras.applications.ResNet50(weights='imagenet')
  
 # load the face dataset
-train_data = load('mindy-or-no-dataset-train.npz')
-test_data = load('mindy-or-no-dataset-test.npz')
+train_data = load('asian-or-no-dataset-train.npz')
+test_data = load('asian-or-no-dataset-test.npz')
 trainX, trainy = train_data['arr_0'], train_data['arr_1']
 testX, testy = test_data['arr_0'], test_data['arr_1']
 print('Loaded: ', trainX.shape, trainy.shape, testX.shape, testy.shape)
@@ -149,4 +149,4 @@ newTestX = asarray(newTestX)
 print(newTestX.shape)
 
 # save arrays to one file in compressed format
-savez_compressed('mindy-or-no-embeddings.npz', newTrainX, trainy, newTestX, testy)
+savez_compressed('asian-or-no-embeddings.npz', newTrainX, trainy, newTestX, testy)
