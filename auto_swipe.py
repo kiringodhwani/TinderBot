@@ -24,12 +24,15 @@ from config import email, password
 
 class AutoSwipe:
     """
-    A class for auto swiping in an open, logged-into Tinder page in Chrome. The auto swiping
-    mimics human behavior by randomly flipping through each Tinder profile's collection of 
-    images with random pauses between flips (mimics how users flip through a profile's photos
-    before deciding to like or dislike), pausing for random amounts of time between swipes,
-    and by allowing users to determine how many profiles they would like to 'like' (i.e., swipe
-    righton ) and what percentage of profile's they would like to 'like' (e.g., 70% of profiles).
+    A class for auto swiping in an open, logged-into Tinder page in Chrome. 
+    
+    Option 1 for Auto Swiping: Race-based auto swiping for East Asian women.
+    
+    Option 2: Randomly flipping through each Tinder profile's collection of images with random
+    pauses between flips (mimics how users flip through a profile's photos before deciding to like
+    or dislike), pausing for random amounts of time between swipes, and by allowing users to
+    determine how many profiles they would like to 'like' (i.e., swipe right on) and what
+    percentage of profile's they would like to 'like' (e.g., 70% of profiles).
     
     Attributes
     ----------
