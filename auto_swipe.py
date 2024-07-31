@@ -49,8 +49,8 @@ class AutoSwipe:
         Cascaded Convolutional Networks" from 2016.
     
     face_embedding_model : keras.src.models.functional.Functional
-        A pretrained neural network called ResNet50 (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50)
-        for creating face embeddings from faces.
+        A ResNet50 neural network pre-trained on ImageNet that we use to create face embeddings from faces
+        detected in Tinder profile images (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50).
         
     Methods
     -------
@@ -109,9 +109,9 @@ class AutoSwipe:
            a dictionary to track the stats of the auto swiping session. Also instantiates a
            Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. This is
            a deep learning model presented in "Joint Face Detection and Alignment Using Multitask 
-           Cascaded Convolutional Networks" from 2016. Lastly, instantiates a pretrained neural network
-           called ResNet50 (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50)
-           for creating face embeddings from faces.
+           Cascaded Convolutional Networks" from 2016. Lastly, instantiates a ResNet50 neural
+           network pre-trained on ImageNet that we use to create face embeddings from faces detected
+           in Tinder profile images (https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50).
         
         Parameters
         ----------
