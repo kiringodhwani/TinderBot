@@ -27,7 +27,7 @@ If the model cannot confidently identify the person as East Asian after reviewin
 
 Tech Tools Used:  **Google Gemini API**, **Selenium**
 1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
-2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
+2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations related to the match's passions in the message it generates.
 
 **For video of this process, please see the attached Youtube video!**
 
