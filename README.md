@@ -1,6 +1,6 @@
 # TinderBot with Race-based Swiping
 
-A Tinder bot that opens and logs into Tinder, swipes right on only East Asian women, scrapes Tinder matches for their profile information, and messages Tinder matches with real Boston locations related to their passions. 
+A Tinder bot that opens and logs into Tinder, swipes right on ('likes') only East Asian women, scrapes Tinder matches for their profile information, and messages Tinder matches with real Boston locations related to their passions. 
 
 ## Description
 A fully autonomous bot that…
@@ -24,6 +24,18 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 ## Steps of Tinder messaging with real Boston locations related to the Tinder match's passions
 1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
 2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
+
+Google Gemini prompt:
+Task: Write an introductory message to a girl named {match name} that I met on a dating app.
+
+Context: {match name} is a {match age}-year-old girl that lives in Boston. She is passionate about {match passions}.
+
+Examples:
+- For a 21-year-old girl from Boston named Maria that is passionate about Tennis -> "Hey {match name}. Tennis this weekend at Dean park? I can pick you up."
+- For a 19-year-old girl from Boston named Jenna that is passionate about painting and sushi -> "Hey {match name}. How about we show each other our favorite paintings at the Museum of Fine Arts and then I buy you some sushi down the street at Douzo Sushi?
+- For a 22-year-old girl from Boston named Maya that is passionate about ramen -> "Hey {match name}. Ramen date at Ganko Ittetsu on me?"
+
+Format: A concise 1-2 sentence text message with no exclamation points and no return characters. Do not include bracketed text like "[sushi restaurant near you]" or “[Rock climbing gym in Boston]”; instead, provide real locations in Boston in your message. If your message includes bracketed text instead of real locations than everything will explode.
 
 Tech Tools Used:  **Google Gemini API**, **Selenium**
 
