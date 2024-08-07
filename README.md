@@ -25,7 +25,7 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
 2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
 
-Google Gemini prompt:
+**Google Gemini prompt:**\n
 Task: Write an introductory message to a girl named {match name} that I met on a dating app.
 
 Context: {match name} is a {match age}-year-old girl that lives in Boston. She is passionate about {match passions}.
