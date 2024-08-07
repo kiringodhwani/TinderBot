@@ -5,7 +5,7 @@ A Tinder bot that opens and logs into Tinder, uses a trained face recognition sy
 ## Description
 A fully autonomous bot that…
 1. Opens and logs into Tinder using a connected Facebook account.
-2. Uses a trained face recognition system to swipes through potential matches, only ‘liking’ the profiles of East Asian women (i.e., swipes right on East Asian woman and swipes left on all other woman). See **Steps of Race-based Auto Swiping** for further explanation. 
+2. Uses a trained face recognition system to swipe through potential matches, only ‘liking’ the profiles of East Asian women (i.e., swipes right on East Asian woman and swipes left on all other woman). See **Steps of Race-based Auto Swiping** for further explanation. 
 3. Scrapes the profiles of Tinder matches and messages them based on their name, age, and passions. Includes real Boston locations in the messages. See **Steps of Tinder Messaging** for further explanation.
 4. Handles all Tinder pop-ups that may appear during 1-3.
 
