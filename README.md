@@ -11,7 +11,7 @@ A fully autonomous bot that…
 
 For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached Youtube video.
 
-## Steps of Race-based Auto Swiping
+### Steps of Race-based Auto Swiping
 1. Use Selenium to extract the current image from the person’s profile.
 2. Apply a Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. The MTCNN identifies all faces in the image and draws bounding boxes around them. This is a deep learning model presented in "Joint Face Detection and Alignment Using Multitask Cascaded Convolutional Networks" from 2016.
 3. Extract the person’s face according to the bounding box drawn by the MTCNN. 
@@ -23,7 +23,7 @@ If the model cannot confidently identify the person as East Asian after reviewin
 
 Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumPy**, **Selenium**, **Matplotlib**
 
-## Steps of Tinder messaging with real Boston locations related to the Tinder match's passions
+### Steps of Tinder messaging with real Boston locations related to the Tinder match's passions
 1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
 2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
 
@@ -47,19 +47,22 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 
 Tech Tools Used:  **Google Gemini API**, **Selenium**
 
-## Description
-
-## Getting Started
+## Getting Started 
 
 ### Dependencies
+* Python Platform: macOS-14.4.1-arm64-arm-64bit
+* Python 3.10.14
+* selenium==4.22.0
+* tensorflow==2.16.2
+* keras==3.4.1
+* opencv-python==4.10.0.84
+* numpy==1.26.4
+* scikit-learn==1.5.1
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
-
-### Installing
-
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+### Configuration
+In your config.py file, you have to set the following fields:
+1. The email and password for the Facebook account that you use to sign into Tinder.
+2. Your Google Gemini API Key.
 
 ### Executing program
 
