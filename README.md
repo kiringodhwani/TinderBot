@@ -1,14 +1,33 @@
 # TinderBot with Race-based Swiping
 
-A Tinder bot that opens and logs into Tinder, swipes right on only East Asian women, scrapes Tinder matches for their profile information, and messages Tinder matches with real Boston locations related to their passions.
+A Tinder bot that opens and logs into Tinder, swipes right on only East Asian women, scrapes Tinder matches for their profile information, and messages Tinder matches with real Boston locations related to their passions. 
 
 ## Description
-
 A fully autonomous bot that…
 1. Opens and logs into Tinder using a connected Facebook account.
 2. Swipes through potential matches, only ‘liking’ the profiles of East Asian women (i.e., swipes right on East Asian woman and swipes left on all other woman).
 3. Scrapes the profiles of Tinder matches and messages them based on their name, age, and passions. Includes real Boston locations in the messages.
+4. Handles all Tinder pop-ups that may appear during 1-3.
 
+For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the below Youtube video.
+
+## Steps of Race-based Auto Swiping
+1. Use Selenium to extract the current image from the person’s profile.
+2. Apply a Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. The MTCNN identifies all faces in the image and draws bounding boxes around them. This is a deep learning model presented in "Joint Face Detection and Alignment Using Multitask Cascaded Convolutional Networks" from 2016.
+3. Extract the person’s face according to the bounding box drawn by the MTCNN. 
+4. Apply a ResNet50 neural network pretrained on ImageNet to create a face embedding for the extracted face. This maps the face to a vector representation that captures its important characteristics. The distance between two face embeddings directly corresponds to a measure of face similarity. The model can be found here: https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50. 
+5. Apply a KNeighborsClassifier (trained on 500+ face embeddings) to the face embedding to determine if the person is East Asian or not. If the classifier has more than 75% confidence that the current person is East Asian, then we swipe right (i.e., ‘like’ the current profile). Else, we flip to the next image in the user’s profile and repeat. 
+If the model cannot confidently identify the person as East Asian after reviewing all profile images, then we swipe left (i.e., ‘dislike’ the current profile).
+
+Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumPy**, **Selenium**, **Matplotlib**
+
+## Steps of Tinder messaging with real Boston locations related to the Tinder match's passions
+1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
+2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
+
+Tech Tools Used:  **Google Gemini API**, **Selenium**
+
+## Description
 
 ## Getting Started
 
