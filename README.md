@@ -5,7 +5,7 @@ A Tinder bot that opens and logs into Tinder, swipes right on only East Asian wo
 ## Description
 
 A fully autonomous bot that…
-1. Opens and logs into Tinder using Facebook.
+1. Opens and logs into Tinder using a connected Facebook account.
 2. Swipes through potential matches, only ‘liking’ the profiles of East Asian women (i.e., swipes right on East Asian woman and swipes left on all other woman).
 3. Scrapes the profiles of Tinder matches and messages them based on their name, age, and passions. Includes real Boston locations in the messages.
 
