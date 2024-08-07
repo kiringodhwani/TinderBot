@@ -12,6 +12,8 @@ A fully autonomous bot that…
 For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached Youtube video.
 
 ### Steps of Race-based Auto Swiping
+
+Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumPy**, **Selenium**, **Matplotlib**
 1. Use Selenium to extract the current image from the person’s profile.
 2. Apply a Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. The MTCNN identifies all faces in the image and draws bounding boxes around them. This is a deep learning model presented in "Joint Face Detection and Alignment Using Multitask Cascaded Convolutional Networks" from 2016.
 3. Extract the person’s face according to the bounding box drawn by the MTCNN. 
@@ -21,9 +23,9 @@ If the model cannot confidently identify the person as East Asian after reviewin
 
 **For video of this process, please see the attached Youtube video!**
 
-Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumPy**, **Selenium**, **Matplotlib**
-
 ### Steps of Tinder messaging with real Boston locations related to the Tinder match's passions
+
+Tech Tools Used:  **Google Gemini API**, **Selenium**
 1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
 2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
 
@@ -44,8 +46,6 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 *- For a 22-year-old girl from Boston named Maya that is passionate about ramen -> "Hey Maya. Ramen date at Ganko Ittetsu on me?"*
 
 *Format: A concise 1-2 sentence text message with no exclamation points and no return characters. Do not include bracketed text like "[sushi restaurant near you]" or “[Rock climbing gym in Boston]”; instead, provide real locations in Boston in your message. If your message includes bracketed text instead of real locations than everything will explode.*
-
-Tech Tools Used:  **Google Gemini API**, **Selenium**
 
 ## Getting Started 
 
