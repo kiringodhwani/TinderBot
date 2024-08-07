@@ -10,6 +10,7 @@ import time
 import random
 import requests
 import pprint
+import os
 
 from config import email, password, api_key
 from match import Match
@@ -132,18 +133,22 @@ class MatchAnalyzer:
             
             print('New Chat IDs: ', new_chatids)
 
-            print('Getting information for each match using the Chat IDs...\n')
+            print('\nGetting information for each match using the Chat IDs...\n')
             for chatid in new_chatids:
                 iteration += 1
-                print(f'Scraping information from match #{iteration}...')
+                
+                term_size = os.get_terminal_size()
+                print('-' * term_size.columns)
+                print(f'\nScraping information from match #{iteration}...\n')
                 new_match = self.get_match(chatid)
                 pprint.pprint(new_match.get_dictionary())
+                print()
                 
-                print('Sending introductory message to match...')
+                print('\nSending introductory message to match...\n')
                 self.send_intro_message(new_match)
                 matches.append(new_match)
 
-            print('Scrolling down to get more Chat IDs...')
+            print('\nScrolling down to get more Chat IDs...\n')
             xpath = '//div[@role="tabpanel"]'
             tab = self.driver.find_element(By.XPATH, xpath)
             self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight;', tab)
@@ -169,24 +174,23 @@ class MatchAnalyzer:
         try:
             message = self.create_message(match)
             
-            print(f'Attempting to send:\n"{message}"')
+            print(f'\nAttempting to send:\n"{message}"\n')
             xpath = '//textarea'
-            time.sleep(5)
+            time.sleep(15)
 
-            #WebDriverWait(self.driver, 5).until(
-            #    EC.presence_of_element_located((By.XPATH,xpath)))
+            WebDriverWait(self.driver, 5).until(
+               EC.presence_of_element_located((By.XPATH,xpath)))
 
-            #textbox = self.driver.find_element(By.XPATH, xpath)
-            #textbox.send_keys(message)
+            textbox = self.driver.find_element(By.XPATH, xpath)
+            textbox.send_keys(message)
 
-
-            
             #textbox.send_keys(Keys.ENTER) # this line sends the message which we don't actually want to do
 
-            print("Message sent succesfully.\n")
+            print("\nMessage sent succesfully.\n")
 
             # sleep so message can be sent
             time.sleep(1.5)
+            
         except Exception as e:
             print("SOMETHING WENT WRONG LOCATING TEXTBOX")
             print(e)
@@ -286,10 +290,10 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
 
             div = self.driver.find_element(By.XPATH, xpath)
 
-            # //*[@id="t-611177491"]/ul/li[2]
-            # //*[@id="t-611177491"]/ul/li[3]
-            # //*[@id="t-611177491"]/ul/li[4]
-            list_refs = div.find_elements(By.XPATH, '//*[@id="t-611177491"]/ul/li/a')
+            # //*[@id="o-521404790"]/ul/li[2]/a
+            # //*[@id="o-521404790"]/ul/li[3]/a
+            # //*[@id="o-521404790"]/ul/li[4]/a
+            list_refs = div.find_elements(By.XPATH, '//*[@id="o-521404790"]/ul/li/a')
             for index in range(len(list_refs)):
                 try:
                     ref = list_refs[index].get_attribute('href')
@@ -301,6 +305,7 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
                     continue
 
         except NoSuchElementException:
+            print('yah')
             pass
 
         return chatids
@@ -433,8 +438,7 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
             self.open_chat(chatid)
 
         try:
-            #xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1'
-            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div[1]/h1'
+            xpath = '//*[@id="o131391810"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1/span[1]'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
             name = element.text
@@ -461,8 +465,7 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
         age = None
 
         try:
-            #xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/span'
-            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/span'
+            xpath = '//*[@id="o131391810"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[1]/div/div[1]/div/h1/span[2]'
             element = self.driver.find_element(By.XPATH, xpath)
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.XPATH, xpath)))
@@ -523,9 +526,9 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
             self.open_chat(chatid)
 
         try:
-            xpath = '//*[@id="u-1419960890"]/div/div[1]/div/main/div[1]/div/div/div/div[2]/div/div/div/div/div[2]/div[2]/div'
+            xpath = '//*[@id="o131391810"]/div/div[1]/div/main/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div[2]/div'
             bio = self.driver.find_element(By.XPATH, xpath).text
-            if 'Looking for\n' in bio:
+            if 'Looking for\n' in bio or 'Basics\n' in bio:
                 return None
             else:
                 return bio
@@ -550,7 +553,7 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
             self.open_chat(chatid)
         try:
             # The 'Bio' and 'Looking For' values can switch places depending on if the match includes a bio.
-            xpath = '//*[@id="de_29_2"]/div/div[2] | //*[@id="de_29_3"]/div/div[2]'
+            xpath = '//*[@id="de_29_2"]/div/div[2] | //*[@id="de_29_6"]/div/div[2] | //*[@id="de_29_5"]/div/div[2] | //*[@id="de_29_3"]/div/div[2]'
             possibilities = self.driver.find_elements(By.XPATH, xpath)
             for possibility in possibilities:
                 if 'Looking for\n' in possibility.text:
@@ -631,7 +634,7 @@ Format: A concise 1-2 sentence text message with no exclamation points and no re
         
         # Close Tinder Web Exclusive Pop Up
         try:
-            xpath = '//*[@id="t41619109"]/div/div[1]/div/main/div[1]/div/button'
+            xpath = '//*[@id="o131391810"]/div/div[1]/div/main/div[1]/div/button'
             close_tinder_web_exclusive_button = self.driver.find_element('xpath', xpath)
             close_tinder_web_exclusive_button.click()
             print('Closed Tinder Web Exclusive pop up')

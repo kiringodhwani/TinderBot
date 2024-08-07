@@ -13,12 +13,12 @@ print('Opened and logged into Tinder!\n')
 number_to_like = 50
 print(f'Start auto-swiping to like {number_to_like} profiles...')
 AutoSwipe = AutoSwipe(driver=driver)
-#AutoSwipe.auto_swipe(number_to_like=number_to_like, ratio=0.7)
-AutoSwipe.face_recognition_smart_swipe(number_to_like=number_to_like)
+#AutoSwipe.auto_swipe(number_to_like=number_to_like, ratio=0.7) # Random swiping.
+AutoSwipe.face_recognition_smart_swipe(number_to_like=number_to_like) # Race-based swiping for East Asian women.
 print('Done auto-swiping!\n')
 
-# # Analyze Matches
-# print('Start analyzing and messaging matches...')
-# MatchAnalyzer = MatchAnalyzer(driver=driver)
-# new_matches = MatchAnalyzer.get_and_message_all_new_matches()
-# print('Finished analyzing and messaging matches!\n')
+# Analyze Matches
+print('Start analyzing and messaging matches...')
+MatchAnalyzer = MatchAnalyzer(driver=driver)
+new_matches = MatchAnalyzer.get_and_message_all_new_matches()
+print('Finished analyzing and messaging matches!\n')
