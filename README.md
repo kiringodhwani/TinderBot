@@ -70,7 +70,7 @@ python run.py
 ```
 
 ## Authors
-@kiringodhwani (kiringodhwani@gmail.com)
+[Kirin Godhwani](https://www.linkedin.com/in/kiringodhwani/) (kiringodhwani@gmail.com)
 
 ## Acknowledgments
 
