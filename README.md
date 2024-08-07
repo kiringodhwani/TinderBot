@@ -9,7 +9,7 @@ A fully autonomous bot that…
 3. Scrapes the profiles of Tinder matches and messages them based on their name, age, and passions. Includes real Boston locations in the messages.
 4. Handles all Tinder pop-ups that may appear during 1-3.
 
-For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the below Youtube video.
+For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached Youtube video.
 
 ## Steps of Race-based Auto Swiping
 1. Use Selenium to extract the current image from the person’s profile.
@@ -19,11 +19,15 @@ For an in-depth explanation of TinderBot's capabilities along with video example
 5. Apply a KNeighborsClassifier (trained on 500+ face embeddings) to the face embedding to determine if the person is East Asian or not. If the classifier has more than 75% confidence that the current person is East Asian, then we swipe right (i.e., ‘like’ the current profile). Else, we flip to the next image in the user’s profile and repeat. 
 If the model cannot confidently identify the person as East Asian after reviewing all profile images, then we swipe left (i.e., ‘dislike’ the current profile).
 
+**For video of this process, please see the attached Youtube video!**
+
 Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumPy**, **Selenium**, **Matplotlib**
 
 ## Steps of Tinder messaging with real Boston locations related to the Tinder match's passions
 1. Scrape matches for their chat id, name, age, work, place of study, home location, gender, bio, relationship preference, distance from you, and passions.
 2. Use the Google Gemini API to message matches based on their name, age, and passions. Use a prompt that requires Gemini to include real Boston locations in the messages it generates.
+
+**For video of this process, please see the attached Youtube video!**
 
 **Google Gemini prompt:**
 
