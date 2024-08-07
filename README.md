@@ -29,7 +29,7 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 
 **For video of this process, please see the attached Youtube video!**
 
-**Google Gemini prompt:**
+<ins>Google Gemini prompt:</ins>
 
 *Task: Write an introductory message to a girl named {match name} that I met on a dating app.*
 
