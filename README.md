@@ -9,7 +9,7 @@ A fully autonomous bot that…
 3. Scrapes the profiles of Tinder matches and sends tailored messages to them, utilizing their name, age, and passions. Includes real Boston locations related to their passions in the messages.
 4. Handles all Tinder pop-ups that may appear during 1-3.
 
-**For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached Youtube video.**
+**For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached Youtube video!**
 
 ### Steps of Race-based Auto Swiping
 
