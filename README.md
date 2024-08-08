@@ -60,7 +60,7 @@ Tech Tools Used:  **Google Gemini API**, **Selenium**
 * scikit-learn==1.5.1
 
 ### Configuration
-In your config.py file, you have to set the following fields:
+In your **config.py** file, you have to set the following fields:
 1. The email and password for the Facebook account that you use to sign into Tinder.
 2. Your Google Gemini API Key.
 
@@ -73,9 +73,6 @@ python run.py
 [Kirin Godhwani](https://www.linkedin.com/in/kiringodhwani/) (kiringodhwani@gmail.com)
 
 ## Acknowledgments
-
-Inspiration, code snippets, etc.
-
 * [TinderBotz](https://github.com/frederikme/TinderBotz)
 * [Automate Tinder using Python & ChatGPT 🔥 | Code with me](https://www.youtube.com/watch?v=VM55efbOkCM)
 * [How to Develop a Face Recognition System Using FaceNet in Keras](https://machinelearningmastery.com/how-to-develop-a-face-recognition-system-using-facenet-in-keras-and-an-svm-classifier/)
