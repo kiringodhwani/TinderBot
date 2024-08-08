@@ -18,8 +18,8 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 2. Apply a Multi-Task Cascaded Convolutional Neural Network (MTCNN) for face detection. The MTCNN identifies all faces in the image and draws bounding boxes around them. This is a deep learning model presented in "Joint Face Detection and Alignment Using Multitask Cascaded Convolutional Networks" from 2016.
 3. Extract the person’s face according to the bounding box drawn by the MTCNN. 
 4. Apply a ResNet50 neural network pretrained on ImageNet to create a face embedding for the extracted face. This maps the face to a vector representation that captures its important characteristics. The distance between two face embeddings directly corresponds to a measure of face similarity. The model can be found here: https://www.tensorflow.org/api_docs/python/tf/keras/applications/ResNet50. 
-5. Apply a KNeighborsClassifier (trained on 500+ face embeddings) to the face embedding to determine if the person is East Asian or not. If the classifier has more than 75% confidence that the current person is East Asian, then we swipe right (i.e., ‘like’ the current profile). Else, we flip to the next image in the user’s profile and repeat.
-6. If the model cannot confidently identify the person as East Asian after reviewing all profile images, then we swipe left (i.e., ‘dislike’ the current profile).
+5. Apply a KNeighborsClassifier (trained on 500+ face embeddings) to the face embedding to determine if the person is East Asian or not. If the classifier has more than 75% confidence that the current person is East Asian, then TinderBot swipes right (i.e., ‘likes’ the current profile). Else, TinderBot flips to the next image in the user’s profile and repeats.
+6. If TinderBot cannot confidently identify the person as East Asian after reviewing all profile images, then TinderBot swipes left (i.e., ‘dislike’ the current profile).
 
 **For video of the auto swiping process, please see the attached Youtube video!**
 
