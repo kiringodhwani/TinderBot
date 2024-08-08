@@ -1,4 +1,4 @@
-# TinderBot with Race-based Swiping
+# Tinder Bot with Race-based Swiping
 
 A Tinder bot that opens and logs into Tinder, uses a trained face recognition system to swipe right on ('like') only East Asian women, scrapes Tinder matches for their profile information, and messages Tinder matches with real Boston locations related to their passions. 
 
