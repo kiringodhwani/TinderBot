@@ -4,7 +4,7 @@ TinderBot opens and logs into Tinder, uses a trained face recognition system to 
 
 [**Youtube Video:**](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)
 
-[<img width="727" alt="Screenshot 2024-08-09 at 5 40 01 PM" src="https://github.com/user-attachments/assets/85386536-6c06-4e87-b374-06184d01e31f">](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)
+[<img width="725" alt="Screenshot 2024-08-09 at 5 42 26 PM" src="https://github.com/user-attachments/assets/211b6fec-585a-4d7c-a4ec-86d5c1189ff1">](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)
 
 ## Description
 A fully autonomous bot that…
