@@ -25,7 +25,7 @@ Tech Tools Used: **Tensorflow**, **Keras**, **scikit-learn**, **OpenCV**, **NumP
 5. Apply a KNeighborsClassifier (trained on 500+ face embeddings) to the face embedding to determine if the person is East Asian or not. If the classifier has more than 75% confidence that the current person is East Asian, then TinderBot swipes right (i.e., ‘likes’ the current profile). Else, TinderBot flips to the next image in the user’s profile and repeats.
 6. If TinderBot cannot confidently identify the person as East Asian after reviewing all profile images, then TinderBot swipes left (i.e., ‘dislikes’ the current profile).
 
-**For video of the auto swiping process, please see the attached Youtube video!**
+**For video of the auto swiping process, please see the attached [Youtube video](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)!**
 
 ### Steps of Tinder Messaging
 
