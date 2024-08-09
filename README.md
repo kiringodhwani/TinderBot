@@ -2,6 +2,7 @@
 
 TinderBot opens and logs into Tinder, uses a trained face recognition system to swipe right on ('like') only East Asian women, scrapes Tinder matches for their profile information, and messages Tinder matches with real Boston locations related to their passions. 
 
+**Youtube Video:**
 [<img width="996" alt="Screenshot 2024-08-09 at 4 17 17 PM" src="https://github.com/user-attachments/assets/1a5a900a-3995-466c-b614-6f180c80b075">](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)
 
 ## Description
