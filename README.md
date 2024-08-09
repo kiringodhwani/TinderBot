@@ -13,7 +13,7 @@ A fully autonomous bot that…
 3. Scrapes the profiles of Tinder matches and sends tailored messages to them, utilizing their name, age, and passions. Includes real Boston locations related to their passions in the messages.
 4. Handles all Tinder pop-ups that may appear during 1-3.
 
-**For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached Youtube video!**
+**For an in-depth explanation of TinderBot's capabilities along with video examples of TinderBot in action, please see the attached [Youtube video](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)!**
 
 ### Steps of Race-based Auto Swiping
 
@@ -49,7 +49,7 @@ Tech Tools Used:  **Google Gemini API**, **Selenium**
 
 *Format: A concise 1-2 sentence text message with no exclamation points and no return characters. Do not include bracketed text like "[sushi restaurant near you]" or “[Rock climbing gym in Boston]”; instead, provide real locations in Boston in your message. If your message includes bracketed text instead of real locations than everything will explode.*
 
-**For video of the messaging process, please see the attached Youtube video!**
+**For video of the messaging process, please see the attached [Youtube video](https://www.youtube.com/watch?v=Vy4h-TA6Ylo)!**
 
 ## Getting Started 
 
